@@ -5,34 +5,33 @@ if not getgenv().executed then
             e621.Chatted:Connect(function(furaffinity)
                 if furaffinity:sub(1,2):lower() == "/w" then
                     rconsoleprint("@@CYAN@@")
-                    rconsoleprint(tostring("Private Message " ..e621.name ..": ") ..furaffinity .."\n")
+                    rconsoleprint(tostring("Private Message " ..e621.name ..": ") ..tostring(furaffinity) .."\n")
                 elseif furaffinity:sub(1,2):lower() == "/e" then
                     rconsoleprint("@@BROWN@@")
-                    rconsoleprint(tostring("Emote " ..e621.name ..": ") ..furaffinity .."\n")
+                    rconsoleprint(tostring("Emote " ..e621.name ..": ") ..tostring(furaffinity) .."\n")
                 else
                     rconsoleprint("@@WHITE@@")
-                    rconsoleprint(tostring(e621.Name ..": ") ..furaffinity .."\n")
+                    rconsoleprint(tostring(e621.Name ..": ") ..tostring(furaffinity) .."\n")
                 end
             end)
         end
         game.Players.PlayerAdded:Connect(function(transfurmationyiff)
-            p = transfurmationyiff
-            if p.UserId == game.CreatorId or p:IsFriendsWith(tonumber(game.CreatorId)) then
+            if transfurmationyiff.UserId == game.CreatorId or transfurmationyiff:IsFriendsWith(tonumber(game.CreatorId)) then
                             rconsoleprint("@@YELLOW@@")
-                            rconsoleprint(tostring("GAME OWNER OR ADMIN" ..tostring(p.Name) .." Joined!, Userid: " ..tostring(p.UserId) ..", Name: "..tostring(p.Name) ..", AccountAge: " ..tostring(p.AccountAge) .."\n"))
+                            rconsoleprint(tostring("GAME OWNER OR ADMIN" ..tostring(transfurmationyiff.Name) .." Joined!, Userid: " ..tostring(transfurmationyiff.UserId) ..", Name: "..tostring(transfurmationyiff.Name) ..", AccountAge: " ..tostring(transfurmationyiff.AccountAge) .."\n"))
                             else
             rconsoleprint("@@GREEN@@")
-            rconsoleprint(tostring(tostring(p.Name) .." Joined!, Userid: " ..tostring(p.UserId) ..", Name: "..tostring(p.Name) ..", AccountAge: " ..tostring(p.AccountAge) .."\n"))
+            rconsoleprint(tostring(tostring(transfurmationyiff.Name) .." Joined!, Userid: " ..tostring(transfurmationyiff.UserId) ..", Name: "..tostring(transfurmationyiff.Name) ..", AccountAge: " ..tostring(transfurmationyiff.AccountAge) .."\n"))
             transfurmationyiff.Chatted:Connect(function(salembad)
                 if salembad:sub(1,2):lower() == "/w" then
                     rconsoleprint("@@CYAN@@")
-                    rconsoleprint(tostring("Private Message " ..transfurmationyiff.name ..": ") ..salembad .."\n")
+                    rconsoleprint(tostring("Private Message " ..transfurmationyiff.name ..": ") ..tostring(salembad) .."\n")
                 elseif salembad:sub(1,2):lower() == "/e" then
                     rconsoleprint("@@BROWN@@")
-                    rconsoleprint(tostring("Emote " ..transfurmationyiff.name ..": ") ..salembad .."\n")
+                    rconsoleprint(tostring("Emote " ..transfurmationyiff.name ..": ") ..tostring(salembad) .."\n")
                 else
                     rconsoleprint("@@WHITE@@")
-                    rconsoleprint(tostring(transfurmationyiff.Name ..": ") ..salembad .."\n")
+                    rconsoleprint(tostring(transfurmationyiff.Name ..": ") ..tostring(salembad) .."\n")
                 end
             end)
         end
