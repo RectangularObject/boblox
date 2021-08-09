@@ -9,20 +9,21 @@ function mapEnable()
 end
 coroutine.wrap(mapEnable)()
 
--- Turn off the screen saturation you get from being near Wrath.
+-- Turn off the screen saturation you get from being near Wrath. (doesn't completely disable, looking into it)
 game:GetService("Players").LocalPlayer.Character.Wrath:Destroy()
 
 -- Automatically collects the clipboards found around the map.
-function collectInfo()
-	game:GetService("RunService").Heartbeat:Connect(function()
-		for _, v in pairs(game:GetService("Workspace").Info:GetChildren()) do
-			pcall(function()
-				fireclickdetector(v.Hitbox.ClickDetector, 1)
-			end)
-		end
-	end)
+function clipboardAutoCollect()
+    for _,clipboard in pairs(game:GetService("Workspace").Info:GetChildren()) do
+        fireclickdetector(clipboard.Hitbox.ClickDetector, 1)
+    end
+
+    game:GetService("Workspace").Info.ChildAdded:Connect(function(clipboard)
+        wait(15)
+        fireclickdetector(clipboard.Hitbox.ClickDetector, 1)
+    end)
 end
-coroutine.wrap(collectInfo)()
+coroutine.wrap(clipboardAutoCollect)()
 
 -- Makes the flashlight super bright.
 function brightFlash()
@@ -81,104 +82,75 @@ coroutine.wrap(displayInfo)()
 
 -- Draw lines from the elevator to all buttons.
 -- Note: Sometimes it won't draw a line to all buttons! Blame roblox pathfinding.
-for _, button in pairs(game:GetService("Workspace").Tasks:GetChildren()) do
-	if button.Button.Color == game:GetService("ReplicatedStorage").Settings.ButtonOffColor.Value then
-		continue
-	end
-	local PathfindingService = game:GetService("PathfindingService")
-	local path = PathfindingService:CreatePath({ AgentRadius = 2, AgentHeight = 1 })
-	path:ComputeAsync(game:GetService("Workspace").MapTable.PrimaryPart.Position + Vector3.new(0, 0, -15), button.Button.Position)
-	local waypoints = path:GetWaypoints()
-	local lastPart = nil
-	for _, waypoint in ipairs(waypoints) do
-		local currentPart = Instance.new("Part")
-		currentPart.Shape = "Ball"
-		currentPart.Material = "Neon"
-		currentPart.Size = Vector3.new(0.5, 0.5, 0.5)
-		currentPart.Position = waypoint.Position + Vector3.new(0, 1, 0)
-		currentPart.Anchored = true
-		currentPart.CanCollide = false
-		currentPart.Parent = game.Workspace
-		if lastPart ~= nil then
-			local attachment0 = Instance.new("Attachment")
-			attachment0.Parent = lastPart
-			local attachment1 = Instance.new("Attachment")
-			attachment1.Parent = currentPart
-			local beam = Instance.new("Beam")
-			beam.Parent = attachment0
-			beam.Attachment0 = attachment0
-			beam.Attachment1 = attachment1
-			beam.Width0 = 0.5
-			beam.Width1 = 0.5
-			beam.FaceCamera = true
-			beam.Enabled = true
-		end
-		lastPart = currentPart
-		local ColorChanged
-		local ChildRemoved
-		ColorChanged = button.Button:GetPropertyChangedSignal("Color"):Connect(function()
-			if button.Button.Color == game:GetService("ReplicatedStorage").Settings.ButtonOffColor.Value then
-				currentPart:Destroy()
-				ColorChanged:Disconnect()
-			end
-		end)
-		ChildRemoved = game:GetService("Workspace").Tasks.ChildRemoved:Connect(function(child)
-			if child == button then
-				currentPart:Destroy()
-				ChildRemoved:Disconnect()
-				ColorChanged:Disconnect()
-			end
-		end)
-	end
+function buttonPathfinder()
+    for _, button in pairs(game:GetService("Workspace").Tasks:GetChildren()) do
+    	if button.Button.Color == game:GetService("ReplicatedStorage").Settings.ButtonOffColor.Value then continue end
+        local PathfindingService = game:GetService("PathfindingService")
+    	local path = PathfindingService:CreatePath({AgentRadius = 2, AgentHeight = 1})
+    	path:ComputeAsync(game:GetService("Workspace").MapTable.PrimaryPart.Position + Vector3.new(0, 0, -15), button.Button.Position)
+        local waypoints = path:GetWaypoints()
+        local lastPart = nil
+    	for _, waypoint in ipairs(waypoints) do
+    		local currentPart = Instance.new("Part"); currentPart.Shape = "Ball"; currentPart.Material = "Neon"; currentPart.Size = Vector3.new(0.5, 0.5, 0.5); currentPart.Position = waypoint.Position + Vector3.new(0, 1, 0); currentPart.Anchored = true; currentPart.CanCollide = false; currentPart.Parent = game.Workspace
+            if lastPart ~= nil then
+                local attachment0 = Instance.new("Attachment"); attachment0.Parent = lastPart
+                local attachment1 = Instance.new("Attachment"); attachment1.Parent = currentPart
+                local beam = Instance.new("Beam"); beam.Parent = attachment0; beam.Attachment0 = attachment0; beam.Attachment1 = attachment1; beam.Width0 = 0.5; beam.Width1 = 0.5; beam.FaceCamera = true; beam.Enabled = true
+            end
+            lastPart = currentPart
+    		local ColorChanged
+            local ChildRemoved
+    		ColorChanged = button.Button:GetPropertyChangedSignal("Color"):Connect(function()
+    			if button.Button.Color == game:GetService("ReplicatedStorage").Settings.ButtonOffColor.Value then
+    				currentPart:Destroy()
+    				ColorChanged:Disconnect()
+    			end
+    		end)
+            ChildRemoved = game:GetService("Workspace").Tasks.ChildRemoved:Connect(function(child)
+                if child == button then
+                    currentPart:Destroy()
+                    ChildRemoved:Disconnect()
+                    ColorChanged:Disconnect()
+                end
+            end)
+    	end
+    end
+
+    game:GetService("Workspace").Tasks.ChildAdded:Connect(function(button)
+        wait(15)
+        if button.Button.Color == game:GetService("ReplicatedStorage").Settings.ButtonOffColor.Value then return end
+        local PathfindingService = game:GetService("PathfindingService")
+    	local path = PathfindingService:CreatePath({AgentRadius = 2, AgentHeight = 1})
+    	path:ComputeAsync(game:GetService("Workspace").MapTable.PrimaryPart.Position + Vector3.new(0, 0, -15), button.Button.Position)
+        local waypoints = path:GetWaypoints()
+        local lastPart = nil
+    	for _, waypoint in ipairs(waypoints) do
+    		local currentPart = Instance.new("Part"); currentPart.Shape = "Ball"; currentPart.Material = "Neon"; currentPart.Size = Vector3.new(0.5, 0.5, 0.5); currentPart.Position = waypoint.Position + Vector3.new(0, 1, 0); currentPart.Anchored = true; currentPart.CanCollide = false; currentPart.Parent = game.Workspace
+            if lastPart ~= nil then
+                local attachment0 = Instance.new("Attachment"); attachment0.Parent = lastPart
+                local attachment1 = Instance.new("Attachment"); attachment1.Parent = currentPart
+                local beam = Instance.new("Beam"); beam.Parent = attachment0; beam.Attachment0 = attachment0; beam.Attachment1 = attachment1; beam.Width0 = 0.5; beam.Width1 = 0.5; beam.FaceCamera = true; beam.Enabled = true
+            end
+            lastPart = currentPart
+    		local ColorChanged
+            local ChildRemoved
+    		ColorChanged = button.Button:GetPropertyChangedSignal("Color"):Connect(function()
+    			if button.Button.Color == game:GetService("ReplicatedStorage").Settings.ButtonOffColor.Value then
+    				currentPart:Destroy()
+    				ColorChanged:Disconnect()
+    			end
+    		end)
+            ChildRemoved = game:GetService("Workspace").Tasks.ChildRemoved:Connect(function(child)
+                if child == button then
+                    currentPart:Destroy()
+                    ChildRemoved:Disconnect()
+                    ColorChanged:Disconnect()
+                end
+            end)
+    	end
+    end)
 end
-game:GetService("Workspace").Tasks.ChildAdded:Connect(function(button)
-	wait(15)
-	local PathfindingService = game:GetService("PathfindingService")
-	local path = PathfindingService:CreatePath({ AgentRadius = 2, AgentHeight = 1 })
-	path:ComputeAsync(game:GetService("Workspace").MapTable.PrimaryPart.Position + Vector3.new(0, 0, -15), button.Button.Position)
-	local waypoints = path:GetWaypoints()
-	local lastPart = nil
-	for _, waypoint in ipairs(waypoints) do
-		local currentPart = Instance.new("Part")
-		currentPart.Shape = "Ball"
-		currentPart.Material = "Neon"
-		currentPart.Size = Vector3.new(0.5, 0.5, 0.5)
-		currentPart.Position = waypoint.Position + Vector3.new(0, 1, 0)
-		currentPart.Anchored = true
-		currentPart.CanCollide = false
-		currentPart.Parent = game.Workspace
-		if lastPart ~= nil then
-			local attachment0 = Instance.new("Attachment")
-			attachment0.Parent = lastPart
-			local attachment1 = Instance.new("Attachment")
-			attachment1.Parent = currentPart
-			local beam = Instance.new("Beam")
-			beam.Parent = attachment0
-			beam.Attachment0 = attachment0
-			beam.Attachment1 = attachment1
-			beam.Width0 = 0.5
-			beam.Width1 = 0.5
-			beam.FaceCamera = true
-			beam.Enabled = true
-		end
-		lastPart = currentPart
-		local ColorChanged
-		local ChildRemoved
-		ColorChanged = button.Button:GetPropertyChangedSignal("Color"):Connect(function()
-			if button.Button.Color == game:GetService("ReplicatedStorage").Settings.ButtonOffColor.Value then
-				currentPart:Destroy()
-				ColorChanged:Disconnect()
-			end
-		end)
-		ChildRemoved = game:GetService("Workspace").Tasks.ChildRemoved:Connect(function(child)
-			if child == button then
-				currentPart:Destroy()
-				ChildRemoved:Disconnect()
-				ColorChanged:Disconnect()
-			end
-		end)
-	end
-end)
+coroutine.wrap(buttonPathfinder)()
 
 -- Button esp for when the pathfinder doesn't work lol.
 for _, button in pairs(game:GetService("Workspace").Tasks:GetChildren()) do
