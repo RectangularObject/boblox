@@ -33,7 +33,3 @@ ms.KeyDown:Connect(function(k)
        end
    end
 end)
-
-print("Noclip key is X");
-print("Press X to turn noclip on and off");
-print("This noclip should bypass most anti-cheats");
