@@ -1,5 +1,4 @@
 -- r6 skeleton esp that isn't a starfish?? wtf??
--- if dx9ware suddenly gets better skeleton esp after i release this i stg
 
 local skeletonColor = Color3.fromRGB(0, 195, 255)
 local deadCheck = true
