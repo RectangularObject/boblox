@@ -1,24 +1,32 @@
 -- r6 skeleton esp that isn't a starfish?? wtf??
 
 local skeletonColor = Color3.fromRGB(0, 195, 255)
-local deadCheck = true
+local drawOnLocalPlayer = true
+local deadCheck = true -- disabling will make the esp funky when people die on games without ragdolls
+local torsoHeight = 3.5 -- (minimum 2) 3.5 aligns with mortem metallum's arm bones when you get blown up. Higher number means shorter torso.
+local endPos = 2 -- (minimum 2) Where the character's arm/leg bone ends. Higher number means shorter bone.
 
 function r6skeletonEsp(player)
     local headLine = Drawing.new("Line"); headLine.Color = skeletonColor
     local headConnector = Drawing.new("Line"); headConnector.Color = skeletonColor
+
     local torsoLine = Drawing.new("Line"); torsoLine.Color = skeletonColor
     local shouldersLine = Drawing.new("Line"); shouldersLine.Color = skeletonColor
     local pelvisLine = Drawing.new("Line"); pelvisLine.Color = skeletonColor
+
     local rightArmLine = Drawing.new("Line"); rightArmLine.Color = skeletonColor
     local rightArmConnector = Drawing.new("Line"); rightArmConnector.Color = skeletonColor
+
     local leftArmLine = Drawing.new("Line"); leftArmLine.Color = skeletonColor
     local leftArmConnector = Drawing.new("Line"); leftArmConnector.Color = skeletonColor
+
     local rightLegLine = Drawing.new("Line"); rightLegLine.Color = skeletonColor
     local rightLegConnector = Drawing.new("Line"); rightLegConnector.Color = skeletonColor
+    
     local leftLegLine = Drawing.new("Line"); leftLegLine.Color = skeletonColor
     local leftLegConnector = Drawing.new("Line"); leftLegConnector.Color = skeletonColor
 
-    function drawSkeleton()
+    local function drawSkeleton()
         local RenderStepped1
         RenderStepped1 = game:GetService("RunService").RenderStepped:Connect(function()
             local w = player.Character or player.CharacterAdded:Wait()
@@ -27,11 +35,11 @@ function r6skeletonEsp(player)
             if h:GetState() == Enum.HumanoidStateType.Dead and deadCheck then headLine.Visible = false; headConnector.Visible = false return end
             local p = w:WaitForChild("Head")
             local t = w:WaitForChild("Torso")
-            local topEsp = p.CFrame:ToWorldSpace(CFrame.new(0, p.Size.Y / 2, 0))
+            local topEsp = p.CFrame:ToWorldSpace(CFrame.new(0, p.Size.Y / 3, 0))
             local topPos, topOnScreen = workspace.CurrentCamera:WorldToViewportPoint(topEsp.Position)
-            local bottomEsp = p.CFrame:ToWorldSpace(CFrame.new(0, -(p.Size.Y / 2), 0))
+            local bottomEsp = p.CFrame:ToWorldSpace(CFrame.new(0, -(p.Size.Y / 3), 0))
             local bottomPos, bottomOnScreen = workspace.CurrentCamera:WorldToViewportPoint(bottomEsp.Position)
-            local neckEsp = t.CFrame:ToWorldSpace(CFrame.new(0, p.Size.Y, 0))
+            local neckEsp = t.CFrame:ToWorldSpace(CFrame.new(0, p.Size.Y / torsoHeight, 0))
             local neckPos, neckOnScreen = workspace.CurrentCamera:WorldToViewportPoint(neckEsp.Position)
             if topOnScreen and bottomOnScreen then
                 headLine.Thickness = 1 / topPos.Z
@@ -57,14 +65,14 @@ function r6skeletonEsp(player)
             local h = w:WaitForChild("Humanoid")
             if h:GetState() == Enum.HumanoidStateType.Dead and deadCheck then torsoLine.Visible = false; shouldersLine.Visible = false; pelvisLine.Visible = false return end
             local p = w:WaitForChild("Torso")
-            local topEsp = p.CFrame:ToWorldSpace(CFrame.new(0, p.Size.Y / 2, 0))
+            local topEsp = p.CFrame:ToWorldSpace(CFrame.new(0, p.Size.Y / torsoHeight, 0))
             local topPos, topOnScreen = workspace.CurrentCamera:WorldToViewportPoint(topEsp.Position)
             local bottomEsp = p.CFrame:ToWorldSpace(CFrame.new(0, -(p.Size.Y / 2), 0))
             local bottomPos, bottomOnScreen = workspace.CurrentCamera:WorldToViewportPoint(bottomEsp.Position)
             
-            local leftShoulderEsp = p.CFrame:ToWorldSpace(CFrame.new(-(p.Size.X / 2), p.Size.Y / 2, 0))
+            local leftShoulderEsp = p.CFrame:ToWorldSpace(CFrame.new(-(p.Size.X / 2), p.Size.Y / torsoHeight, 0))
             local leftShoulderPos, leftShoulderOnScreen = workspace.CurrentCamera:WorldToViewportPoint(leftShoulderEsp.Position)
-            local rightShoulderEsp = p.CFrame:ToWorldSpace(CFrame.new(p.Size.X / 2, p.Size.Y / 2, 0))
+            local rightShoulderEsp = p.CFrame:ToWorldSpace(CFrame.new(p.Size.X / 2, p.Size.Y / torsoHeight, 0))
             local rightShoulderPos, rightShoulderOnScreen = workspace.CurrentCamera:WorldToViewportPoint(rightShoulderEsp.Position)
             local leftPelvisEsp = p.CFrame:ToWorldSpace(CFrame.new(-(p.Size.X / 4), -(p.Size.Y / 2), 0))
             local leftPelvisPos, leftPelvisOnScreen = workspace.CurrentCamera:WorldToViewportPoint(leftPelvisEsp.Position)
@@ -103,12 +111,12 @@ function r6skeletonEsp(player)
             if h:GetState() == Enum.HumanoidStateType.Dead and deadCheck then rightArmLine.Visible = false; rightArmConnector.Visible = false return end
             local p = w:WaitForChild("Right Arm")
             local t = w:WaitForChild("Torso")
-            local topEsp = p.CFrame:ToWorldSpace(CFrame.new(0, p.Size.Y / 2.5, 0))
+            local topEsp = p.CFrame:ToWorldSpace(CFrame.new(0, p.Size.Y / torsoHeight, 0))
             local topPos, topOnScreen = workspace.CurrentCamera:WorldToViewportPoint(topEsp.Position)
-            local bottomEsp = p.CFrame:ToWorldSpace(CFrame.new(0, -(p.Size.Y / 2), 0))
+            local bottomEsp = p.CFrame:ToWorldSpace(CFrame.new(0, -(p.Size.Y / endPos), 0))
             local bottomPos, bottomOnScreen = workspace.CurrentCamera:WorldToViewportPoint(bottomEsp.Position)
             
-    	    local rightShoulderEsp = t.CFrame:ToWorldSpace(CFrame.new(p.Size.X / 1, p.Size.Y / 2, 0))
+    	    local rightShoulderEsp = t.CFrame:ToWorldSpace(CFrame.new(p.Size.X / 1, p.Size.Y / torsoHeight, 0))
     	    local rightShoulderPos, rightShoulderOnScreen = workspace.CurrentCamera:WorldToViewportPoint(rightShoulderEsp.Position)
             
             if topOnScreen and bottomOnScreen then
@@ -136,12 +144,12 @@ function r6skeletonEsp(player)
             if h:GetState() == Enum.HumanoidStateType.Dead and deadCheck then leftArmLine.Visible = false; leftArmConnector.Visible = false return end
             local p = w:WaitForChild("Left Arm")
             local t = w:WaitForChild("Torso")
-            local topEsp = p.CFrame:ToWorldSpace(CFrame.new(0, p.Size.Y / 2.5, 0))
+            local topEsp = p.CFrame:ToWorldSpace(CFrame.new(0, p.Size.Y / torsoHeight, 0))
             local topPos, topOnScreen = workspace.CurrentCamera:WorldToViewportPoint(topEsp.Position)
-            local bottomEsp = p.CFrame:ToWorldSpace(CFrame.new(0, -(p.Size.Y / 2), 0))
+            local bottomEsp = p.CFrame:ToWorldSpace(CFrame.new(0, -(p.Size.Y / endPos), 0))
             local bottomPos, bottomOnScreen = workspace.CurrentCamera:WorldToViewportPoint(bottomEsp.Position)
             
-            local leftShoulderEsp = t.CFrame:ToWorldSpace(CFrame.new(-(p.Size.X / 1), p.Size.Y / 2, 0))
+            local leftShoulderEsp = t.CFrame:ToWorldSpace(CFrame.new(-(p.Size.X / 1), p.Size.Y / torsoHeight, 0))
             local leftShoulderPos, leftShoulderOnScreen = workspace.CurrentCamera:WorldToViewportPoint(leftShoulderEsp.Position)
             if topOnScreen and bottomOnScreen then
                 leftArmLine.Thickness = 1 / topPos.Z
@@ -170,7 +178,7 @@ function r6skeletonEsp(player)
             local t = w:WaitForChild("Torso")
             local topEsp = p.CFrame:ToWorldSpace(CFrame.new(0, p.Size.Y / 2.5, 0))
             local topPos, topOnScreen = workspace.CurrentCamera:WorldToViewportPoint(topEsp.Position)
-            local bottomEsp = p.CFrame:ToWorldSpace(CFrame.new(0, -(p.Size.Y / 2), 0))
+            local bottomEsp = p.CFrame:ToWorldSpace(CFrame.new(0, -(p.Size.Y / endPos), 0))
             local bottomPos, bottomOnScreen = workspace.CurrentCamera:WorldToViewportPoint(bottomEsp.Position)
             
             local rightPelvisEsp = t.CFrame:ToWorldSpace(CFrame.new(p.Size.X / 2, -(p.Size.Y / 2), 0))
@@ -202,7 +210,7 @@ function r6skeletonEsp(player)
             local t = w:WaitForChild("Torso")
             local topEsp = p.CFrame:ToWorldSpace(CFrame.new(0, p.Size.Y / 2.5, 0))
             local topPos, topOnScreen = workspace.CurrentCamera:WorldToViewportPoint(topEsp.Position)
-            local bottomEsp = p.CFrame:ToWorldSpace(CFrame.new(0, -(p.Size.Y / 2), 0))
+            local bottomEsp = p.CFrame:ToWorldSpace(CFrame.new(0, -(p.Size.Y / endPos), 0))
             local bottomPos, bottomOnScreen = workspace.CurrentCamera:WorldToViewportPoint(bottomEsp.Position)
             
             local leftPelvisEsp = t.CFrame:ToWorldSpace(CFrame.new(-(p.Size.X / 2), -(p.Size.Y / 2), 0))
@@ -253,6 +261,7 @@ function r6skeletonEsp(player)
 end
 
 for _, player in ipairs(game:GetService("Players"):GetPlayers()) do
+    if not drawOnLocalPlayer and player == game:GetService("Players").LocalPlayer then continue end
     local w = player.Character or player.CharacterAdded:Wait()
     local h = w:WaitForChild("Humanoid")
     if h.RigType == Enum.HumanoidRigType.R6 then
