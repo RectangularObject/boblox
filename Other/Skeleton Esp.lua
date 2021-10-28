@@ -1,10 +1,11 @@
 -- r6 skeleton esp that isn't a starfish?? wtf??
 
-local skeletonColor = Color3.fromRGB(0, 195, 255)
+local skeletonColor = Color3.fromRGB(255, 0, 0)
 local drawOnLocalPlayer = true
-local deadCheck = true -- disabling will make the esp funky when people die on games without ragdolls
-local torsoHeight = 3.5 -- (minimum 2) 3.5 aligns with mortem metallum's arm bones when you get blown up. Higher number means shorter torso.
-local endPos = 2 -- (minimum 2) Where the character's arm/leg bone ends. Higher number means shorter bone.
+local deadCheck = true -- Disabling will make the esp funky when people die on games without ragdolls.
+local skeletonThickness = 1 -- How thick the bones are. Mega aids at high values.
+local torsoHeight = 3.5 -- (minimum 2) 3.5 aligns with mortem metallum's arm bones when you get blown up. Higher value means shorter torso.
+local endPos = 2 -- (minimum 2) Where the character's arm/leg bone ends. Higher value means shorter bone.
 
 function r6skeletonEsp(player)
     local headLine = Drawing.new("Line"); headLine.Color = skeletonColor
@@ -42,7 +43,7 @@ function r6skeletonEsp(player)
             local neckEsp = t.CFrame:ToWorldSpace(CFrame.new(0, p.Size.Y / torsoHeight, 0))
             local neckPos, neckOnScreen = workspace.CurrentCamera:WorldToViewportPoint(neckEsp.Position)
             if topOnScreen and bottomOnScreen then
-                headLine.Thickness = 1 / topPos.Z
+                headLine.Thickness = skeletonThickness / topPos.Z
                 headLine.From = Vector2.new(topPos.X, topPos.Y)
                 headLine.To = Vector2.new(bottomPos.X, bottomPos.Y)
                 headLine.Visible = true
@@ -50,7 +51,7 @@ function r6skeletonEsp(player)
                 headLine.Visible = false
             end
             if bottomOnScreen and neckOnScreen then
-                headConnector.Thickness = 1 / bottomPos.Z
+                headConnector.Thickness = skeletonThickness / bottomPos.Z
                 headConnector.From = Vector2.new(bottomPos.X, bottomPos.Y)
                 headConnector.To = Vector2.new(neckPos.X, neckPos.Y)
                 headConnector.Visible = true
@@ -79,7 +80,7 @@ function r6skeletonEsp(player)
             local rightPelvisEsp = p.CFrame:ToWorldSpace(CFrame.new(p.Size.X / 4, -(p.Size.Y / 2), 0))
             local rightPelvisPos, rightPelvisOnScreen = workspace.CurrentCamera:WorldToViewportPoint(rightPelvisEsp.Position)
             if topOnScreen and bottomOnScreen then
-                torsoLine.Thickness = 1 / topPos.Z
+                torsoLine.Thickness = skeletonThickness / topPos.Z
                 torsoLine.From = Vector2.new(topPos.X, topPos.Y)
                 torsoLine.To = Vector2.new(bottomPos.X, bottomPos.Y)
                 torsoLine.Visible = true
@@ -87,7 +88,7 @@ function r6skeletonEsp(player)
                 torsoLine.Visible = false
             end
     	    if leftShoulderOnScreen and rightShoulderOnScreen then
-    	    	shouldersLine.Thickness = 1 / leftShoulderPos.Z
+    	    	shouldersLine.Thickness = skeletonThickness / leftShoulderPos.Z
     	    	shouldersLine.From = Vector2.new(leftShoulderPos.X, leftShoulderPos.Y)
     	    	shouldersLine.To = Vector2.new(rightShoulderPos.X, rightShoulderPos.Y)
     	    	shouldersLine.Visible = true
@@ -95,7 +96,7 @@ function r6skeletonEsp(player)
     	    	shouldersLine.Visible = false
     	    end
     	    if leftPelvisOnScreen and rightPelvisOnScreen then
-    	    	pelvisLine.Thickness = 1 / leftPelvisPos.Z
+    	    	pelvisLine.Thickness = skeletonThickness / leftPelvisPos.Z
     	    	pelvisLine.From = Vector2.new(leftPelvisPos.X, leftPelvisPos.Y)
     	    	pelvisLine.To = Vector2.new(rightPelvisPos.X, rightPelvisPos.Y)
     	    	pelvisLine.Visible = true
@@ -120,7 +121,7 @@ function r6skeletonEsp(player)
     	    local rightShoulderPos, rightShoulderOnScreen = workspace.CurrentCamera:WorldToViewportPoint(rightShoulderEsp.Position)
             
             if topOnScreen and bottomOnScreen then
-                rightArmLine.Thickness = 1 / topPos.Z
+                rightArmLine.Thickness = skeletonThickness / topPos.Z
                 rightArmLine.From = Vector2.new(topPos.X, topPos.Y)
                 rightArmLine.To = Vector2.new(bottomPos.X, bottomPos.Y)
                 rightArmLine.Visible = true
@@ -128,7 +129,7 @@ function r6skeletonEsp(player)
                 rightArmLine.Visible = false
             end
             if topOnScreen and rightShoulderOnScreen then
-    	    	rightArmConnector.Thickness = 1 / topPos.Z
+    	    	rightArmConnector.Thickness = skeletonThickness / topPos.Z
     	    	rightArmConnector.From = Vector2.new(rightShoulderPos.X, rightShoulderPos.Y)
     	    	rightArmConnector.To = Vector2.new(topPos.X, topPos.Y)
     	    	rightArmConnector.Visible = true
@@ -152,7 +153,7 @@ function r6skeletonEsp(player)
             local leftShoulderEsp = t.CFrame:ToWorldSpace(CFrame.new(-(p.Size.X / 1), p.Size.Y / torsoHeight, 0))
             local leftShoulderPos, leftShoulderOnScreen = workspace.CurrentCamera:WorldToViewportPoint(leftShoulderEsp.Position)
             if topOnScreen and bottomOnScreen then
-                leftArmLine.Thickness = 1 / topPos.Z
+                leftArmLine.Thickness = skeletonThickness / topPos.Z
                 leftArmLine.From = Vector2.new(topPos.X, topPos.Y)
                 leftArmLine.To = Vector2.new(bottomPos.X, bottomPos.Y)
                 leftArmLine.Visible = true
@@ -160,7 +161,7 @@ function r6skeletonEsp(player)
                 leftArmLine.Visible = false
             end
             if topOnScreen and leftShoulderOnScreen then
-                leftArmConnector.Thickness = 1 / topPos.Z
+                leftArmConnector.Thickness = skeletonThickness / topPos.Z
                 leftArmConnector.From = Vector2.new(leftShoulderPos.X, leftShoulderPos.Y)
                 leftArmConnector.To = Vector2.new(topPos.X, topPos.Y)
                 leftArmConnector.Visible = true
@@ -184,7 +185,7 @@ function r6skeletonEsp(player)
             local rightPelvisEsp = t.CFrame:ToWorldSpace(CFrame.new(p.Size.X / 2, -(p.Size.Y / 2), 0))
             local rightPelvisPos, rightPelvisOnScreen = workspace.CurrentCamera:WorldToViewportPoint(rightPelvisEsp.Position)
             if topOnScreen and bottomOnScreen then
-                rightLegLine.Thickness = 1 / topPos.Z
+                rightLegLine.Thickness = skeletonThickness / topPos.Z
                 rightLegLine.From = Vector2.new(topPos.X, topPos.Y)
                 rightLegLine.To = Vector2.new(bottomPos.X, bottomPos.Y)
                 rightLegLine.Visible = true
@@ -192,7 +193,7 @@ function r6skeletonEsp(player)
                 rightLegLine.Visible = false
             end
             if topOnScreen and rightPelvisOnScreen then
-                rightLegConnector.Thickness = 1 / topPos.Z
+                rightLegConnector.Thickness = skeletonThickness / topPos.Z
                 rightLegConnector.From = Vector2.new(rightPelvisPos.X, rightPelvisPos.Y)
                 rightLegConnector.To = Vector2.new(topPos.X, topPos.Y)
                 rightLegConnector.Visible = true
@@ -216,7 +217,7 @@ function r6skeletonEsp(player)
             local leftPelvisEsp = t.CFrame:ToWorldSpace(CFrame.new(-(p.Size.X / 2), -(p.Size.Y / 2), 0))
             local leftPelvisPos, leftPelvisOnScreen = workspace.CurrentCamera:WorldToViewportPoint(leftPelvisEsp.Position)
             if topOnScreen and bottomOnScreen then
-                leftLegLine.Thickness = 1 / topPos.Z
+                leftLegLine.Thickness = skeletonThickness / topPos.Z
                 leftLegLine.From = Vector2.new(topPos.X, topPos.Y)
                 leftLegLine.To = Vector2.new(bottomPos.X, bottomPos.Y)
                 leftLegLine.Visible = true
@@ -224,7 +225,7 @@ function r6skeletonEsp(player)
                 leftLegLine.Visible = false
             end
             if topOnScreen and leftPelvisOnScreen then
-                leftLegConnector.Thickness = 1 / topPos.Z
+                leftLegConnector.Thickness = skeletonThickness / topPos.Z
                 leftLegConnector.From = Vector2.new(leftPelvisPos.X, leftPelvisPos.Y)
                 leftLegConnector.To = Vector2.new(topPos.X, topPos.Y)
                 leftLegConnector.Visible = true
