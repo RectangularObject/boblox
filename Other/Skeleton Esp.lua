@@ -1,4 +1,5 @@
 -- r6 skeleton esp that isn't a starfish?? wtf??
+-- if you're reading this please improve my code
 
 local skeletonColor = Color3.fromRGB(255, 0, 0)
 local drawOnLocalPlayer = true
