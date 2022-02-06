@@ -4,6 +4,12 @@
 ]]
 
 --[[
+Allows npcs to be returned by game.Players:GetPlayers()
+This can be used for any script that usually only work against other players
+Side effect: npcs show up in the escape menu player list
+]]
+
+--[[
     Changelogs
     11/3/2021 -- Squares
         [*] Replaced all occurrences of "next, v" with "ipairs()"
