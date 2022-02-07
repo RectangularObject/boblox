@@ -11,6 +11,8 @@ Side effect: npcs show up in the escape menu player list
 
 --[[
     Changelogs
+    2/6/2022 -- Squares
+        [!] Attempted to fix npcs unable to being hurt by you after running this script
     11/3/2021 -- Squares
         [*] Replaced all occurrences of "next, v" with "ipairs()"
         [*] Replaced depreciated function "Remove()" with "Destroy()"
@@ -54,6 +56,14 @@ function makeinstanceplayer(name, character)
             player.Team = game:GetService('Teams'):FindFirstChild(settings.make_teams_for_npcs.name)
         end
     end
+
+    local OldIndex = nil
+    OldIndex = hookmetamethod(game, "__index", newcclosure(function(Self, ...)
+        if not checkcaller() and Self == player then
+            return nil
+        end
+        return OldIndex
+    end))
 end
 
 function findplayerinstance(name, character)
