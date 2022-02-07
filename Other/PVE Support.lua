@@ -54,14 +54,6 @@ function makeinstanceplayer(name, character)
             player.Team = game:GetService('Teams'):FindFirstChild(settings.make_teams_for_npcs.name)
         end
     end
-
-    local OldIndex = nil
-    OldIndex = hookmetamethod(game, "__index", newcclosure(function(Self, ...)
-        if not checkcaller() and Self == player then
-            return nil
-        end
-        return OldIndex
-    end))
 end
 
 function findplayerinstance(name, character)
