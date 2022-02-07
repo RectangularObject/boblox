@@ -28,14 +28,14 @@ local settings = {
     npc_folder_names = _G.npc_folder_names,
 
     checks = {
-        humanoid_check = true, -- checks if there's a humanoid in the model
-        hrp_check = true, -- checks if there's a humanoidrootpart in it
+        humanoid_check = _G.humanoid_check, -- checks if there's a humanoid in the model
+        hrp_check = _G.hrp_check, -- checks if there's a humanoidrootpart in it
     },
 
     make_teams_for_npcs = {
-        ['enabled'] = true, -- Create/Assign a team for the npcs?
-        ['name'] = 'Zombies', -- Can be named the same as an existing team
-        ['color'] = BrickColor.new("Bright green") -- Can be colored the same as an existing team
+        ['enabled'] = _G.make_teams_for_npcs, -- Create/Assign a team for the npcs?
+        ['name'] = _G.npc_team_name, -- Can be named the same as an existing team
+        ['color'] = _G.npc_team_color -- Can be colored the same as an existing team
     }
 }
 
