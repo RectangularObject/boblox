@@ -11,6 +11,8 @@ Side effect: npcs show up in the escape menu player list
 
 --[[
     Changelogs
+    2/6/2022
+        [!] Prevented the script from adding existing players
     11/3/2021 -- Squares
         [*] Replaced all occurrences of "next, v" with "ipairs()"
         [*] Replaced depreciated function "Remove()" with "Destroy()"
@@ -68,6 +70,8 @@ function startaddingnpcs(npcpath)
     local functions = {
         ['adding'] = function(instance)
             if instance:IsA('Model') and
+            (game:GetService('Players'):GetPlayerFromCharacter(instance) == nil)
+            and
             (settings.checks.humanoid_check and instance:FindFirstChild('Humanoid') or not settings.checks.humanoid_check)
             and
             (settings.checks.hrp_check and instance:FindFirstChild('HumanoidRootPart') or not settings.checks.hrp_check)
