@@ -11,8 +11,6 @@ Side effect: npcs show up in the escape menu player list
 
 --[[
     Changelogs
-    2/6/2022
-        [!] Prevented the script from adding existing players
     11/3/2021 -- Squares
         [*] Replaced all occurrences of "next, v" with "ipairs()"
         [*] Replaced depreciated function "Remove()" with "Destroy()"
