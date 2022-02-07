@@ -69,8 +69,7 @@ end
 function startaddingnpcs(npcpath)
     local functions = {
         ['adding'] = function(instance)
-            if instance:IsA('Model') and
-            (game:GetService('Players'):GetPlayerFromCharacter(instance) == nil)
+            if instance:IsA('Model')
             and
             (settings.checks.humanoid_check and instance:FindFirstChild('Humanoid') or not settings.checks.humanoid_check)
             and
