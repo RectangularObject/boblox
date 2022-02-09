@@ -13,6 +13,7 @@ Unsupported Games: RECOIL, Rolling Thunder PVE
     Changelogs
     2/8/2022 -- Squares
         [!] Fixed not being able to damage npcs after running this script
+            - Does not fix Rolling Thunder PVE's npcs, they have a weird system
     11/3/2021 -- Squares
         [*] Replaced all occurrences of "next, v" with "ipairs()"
         [*] Replaced depreciated function "Remove()" with "Destroy()"
@@ -133,7 +134,7 @@ end)
 for a,b in ipairs(settings.npc_paths) do
     print("Path " .. a .. " to search from: " .. b:GetFullName())
     for c,d in ipairs(settings.npc_folder_names) do
-        print("Folder " .. a .. " name: " .. d)
+        print("Folder " .. c .. " name: " .. d)
         b.DescendantAdded:Connect(function(child)
             wait(1)
             if tostring(child) == d then
