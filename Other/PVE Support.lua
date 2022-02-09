@@ -121,20 +121,6 @@ oldindex = hookmetamethod(game, "__index", newcclosure(function(self, ...)
     end
     return oldindex(self, ...)
 end))
-local oldnamecall
-oldnamecall = hookmetamethod(game, "__namecall", newcclosure(function(self, ...)
-    local namecallMethod = getnamecallmethod()
-    if not checkcaller() and self == game.Players and namecallMethod == "GetPlayers" or not checkcaller() and self == game.Players and namecallMethod == "GetChildren" then
-        local players = game.Players:GetChildren()
-        table.foreachi(players, function(index, player)
-            if table.find(spoof, player) then
-                table.remove(players, table.find(spoof, player))
-            end
-        end)
-        return players
-    end
-    return oldnamecall(self, ...)
-end))
 
 game.Players.PlayerRemoving:Connect(function(instance)
     if table.find(spoof, instance) then
