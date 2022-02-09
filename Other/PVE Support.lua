@@ -54,13 +54,6 @@ function makeinstanceplayer(name, character)
             player.Team = game:GetService('Teams'):FindFirstChild(settings.make_teams_for_npcs.name)
         end
     end
-    local oldindex
-    oldindex = hookmetamethod(game, "__index", function(self, key)
-        if not checkcaller() and self == player then
-            return nil
-        end
-        return oldindex(self, key)
-    end)
 end
 
 function findplayerinstance(name, character)
@@ -71,6 +64,7 @@ function findplayerinstance(name, character)
     end
 end
 
+local spoof = {}
 function startaddingnpcs(npcpath)
     local functions = {
         ['adding'] = function(instance)
@@ -83,6 +77,7 @@ function startaddingnpcs(npcpath)
                 local pl = findplayerinstance(instance.Name, instance)
                 if not pl then
                     print(instance.Name, 'Added')
+                    table.insert(spoof, instance)
                     makeinstanceplayer(instance.Name, instance)
                 end
             end
@@ -96,6 +91,7 @@ function startaddingnpcs(npcpath)
                 local pl = findplayerinstance(instance.Name, instance)
                 if pl then
                     print(pl.Name, 'Removed')
+                    table.remove(spoof, table.find(spoof, instance))
                     pl:Destroy()
                 end
             end
@@ -115,6 +111,16 @@ function startaddingnpcs(npcpath)
         functions['removing'](instance)
     end)
 end
+
+local oldindex
+oldindex = hookmetamethod(game, "__index", function(self, key)
+    if table.find(spoof, self) then
+        if not checkcaller() and key == "Character" then
+            return nil
+        end
+    end
+    return oldindex(self, key)
+end)
 
 for a,b in ipairs(settings.npc_paths) do
     print("Path " .. a .. " to search from: " .. b:GetFullName())
