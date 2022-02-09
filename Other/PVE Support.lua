@@ -115,7 +115,7 @@ end
 local oldindex
 oldindex = hookmetamethod(game, "__index", function(self, key)
     if table.find(spoof, self) then
-        if not checkcaller() and key == "Character" then
+        if not checkcaller() then
             return nil
         end
     end
