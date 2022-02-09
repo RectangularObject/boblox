@@ -55,12 +55,11 @@ function makeinstanceplayer(name, character)
         end
     end
     local oldindex
-    oldindex = hookmetamethod(game, __index, function(tbl, key)
-        if not checkcaller() and getrawmetatable(tbl) == getrawmetatable(instance) then
+    oldindex = hookmetamethod(game, "__index", function(self, key)
+        if not checkcaller() and self == player then
             return nil
-        else
-            return oldindex(tbl, key)
         end
+        return oldindex(self, key)
     end)
 end
 
