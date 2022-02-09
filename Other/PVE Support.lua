@@ -54,15 +54,14 @@ function makeinstanceplayer(name, character)
             player.Team = game:GetService('Teams'):FindFirstChild(settings.make_teams_for_npcs.name)
         end
     end
-    setreadonly(getrawmetatable(player), false)
-    getrawmetatable(player).__index = function(tbl, key)
-        if not checkcaller() then
+    local oldindex
+    oldindex = hookmetamethod(game, __index, function(tbl, key)
+        if not checkcaller() and getrawmetatable(tbl) == getrawmetatable(instance) then
             return nil
         else
-            return rawget(tbl, key)
+            return oldindex(tbl, key)
         end
-    end
-    setreadonly(getrawmetatable(player), true)
+    end)
 end
 
 function findplayerinstance(name, character)
