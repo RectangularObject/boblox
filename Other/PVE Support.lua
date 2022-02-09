@@ -11,8 +11,6 @@ Side effect: npcs show up in the escape menu player list
 
 --[[
     Changelogs
-    2/8/2022 -- Squares
-        [!] Testing fix for not being able to damage enemies
     11/3/2021 -- Squares
         [*] Replaced all occurrences of "next, v" with "ipairs()"
         [*] Replaced depreciated function "Remove()" with "Destroy()"
@@ -56,6 +54,7 @@ function makeinstanceplayer(name, character)
             player.Team = game:GetService('Teams'):FindFirstChild(settings.make_teams_for_npcs.name)
         end
     end
+    setreadonly(getrawmetatable(player), false)
     getrawmetatable(player).__index = function(tbl, key)
         if not checkcaller() then
             return nil
@@ -63,6 +62,7 @@ function makeinstanceplayer(name, character)
             return rawget(tbl, key)
         end
     end
+    setreadonly(getrawmetatable(player), true)
 end
 
 function findplayerinstance(name, character)
