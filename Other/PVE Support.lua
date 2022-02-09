@@ -113,18 +113,32 @@ function startaddingnpcs(npcpath)
 end
 
 local oldindex
-oldindex = hookmetamethod(game, "__index", function(self, key)
+oldindex = hookmetamethod(game, "__index", newcclosure(function(self, ...)
     if table.find(spoof, self) then
         if not checkcaller() then
             return nil
         end
     end
-    return oldindex(self, key)
-end)
+    return oldindex(self, ...)
+end))
+local oldnamecall
+oldnamecall = hookmetamethod(game, "__namecall", newcclosure(function(self, ...)
+    local namecallMethod = getnamecallmethod()
+    if not checkcaller() and self == game.Players and namecallMethod == "GetPlayers" or not checkcaller() and self == game.Players and namecallMethod == "GetChildren" then
+        local players = game.Players:GetChildren()
+        table.foreachi(players, function(index, player)
+            if table.find(spoof, player) then
+                table.remove(players, table.find(spoof, player))
+            end
+        end)
+        return players
+    end
+    return oldnamecall(self, ...)
+end))
 
 game.Players.PlayerRemoving:Connect(function(instance)
     if table.find(spoof, instance) then
-        table.remove(spoof, instance)
+        table.remove(spoof, table.find(spoof, instance))
     end
 end)
 
