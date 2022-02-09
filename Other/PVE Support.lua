@@ -36,9 +36,11 @@ local settings = {
         ['color'] = _G.npc_team_color -- Can be colored the same as an existing team
     }
 }
+local spoof = {}
 
 function makeinstanceplayer(name, character)
     local player = Instance.new('Player', game.Players)
+    table.insert(spoof, player)
     player.Name = name
     player.Character = character
     player.Archivable = false
@@ -54,6 +56,7 @@ function makeinstanceplayer(name, character)
             player.Team = game:GetService('Teams'):FindFirstChild(settings.make_teams_for_npcs.name)
         end
     end
+
 end
 
 function findplayerinstance(name, character)
@@ -64,7 +67,6 @@ function findplayerinstance(name, character)
     end
 end
 
-local spoof = {}
 function startaddingnpcs(npcpath)
     local functions = {
         ['adding'] = function(instance)
@@ -77,7 +79,6 @@ function startaddingnpcs(npcpath)
                 local pl = findplayerinstance(instance.Name, instance)
                 if not pl then
                     print(instance.Name, 'Added')
-                    table.insert(spoof, instance)
                     makeinstanceplayer(instance.Name, instance)
                 end
             end
@@ -91,7 +92,6 @@ function startaddingnpcs(npcpath)
                 local pl = findplayerinstance(instance.Name, instance)
                 if pl then
                     print(pl.Name, 'Removed')
-                    table.remove(spoof, table.find(spoof, instance))
                     pl:Destroy()
                 end
             end
@@ -120,6 +120,12 @@ oldindex = hookmetamethod(game, "__index", function(self, key)
         end
     end
     return oldindex(self, key)
+end)
+
+game.Players.PlayerRemoving:Connect(function(instance)
+    if table.find(spoof, instance) then
+        table.remove(spoof, instance)
+    end
 end)
 
 for a,b in ipairs(settings.npc_paths) do
