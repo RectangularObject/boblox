@@ -11,6 +11,9 @@ Side effect: npcs show up in the escape menu player list
 
 --[[
     Changelogs
+    2/8/2022 -- Squares
+        [!] Fixed not being able to damage npcs after running this script
+            - Does not fix Rolling Thunder PVE's npcs, they have a weird system
     11/3/2021 -- Squares
         [*] Replaced all occurrences of "next, v" with "ipairs()"
         [*] Replaced depreciated function "Remove()" with "Destroy()"
