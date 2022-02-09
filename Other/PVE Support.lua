@@ -6,14 +6,13 @@
 --[[
 Allows npcs to be returned by game.Players:GetPlayers()
 This can be used for any script that usually only work against other players
-Side effect: npcs show up in the escape menu player list
+Unsupported Games: RECOIL, Rolling Thunder PVE
 ]]
 
 --[[
     Changelogs
     2/8/2022 -- Squares
         [!] Fixed not being able to damage npcs after running this script
-            - Does not fix Rolling Thunder PVE's npcs, they have a weird system
     11/3/2021 -- Squares
         [*] Replaced all occurrences of "next, v" with "ipairs()"
         [*] Replaced depreciated function "Remove()" with "Destroy()"
