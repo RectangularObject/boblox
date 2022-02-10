@@ -11,6 +11,8 @@ Unsupported Games: RECOIL, Rolling Thunder PVE
 
 --[[
     Changelogs
+    2/9/2022 -- Squares
+        [!] Fixed npcs with renamed humanoids not working
     2/8/2022 -- Squares
         [!] Fixed not being able to damage npcs after running this script
     11/3/2021 -- Squares
@@ -74,7 +76,7 @@ function startaddingnpcs(npcpath)
         ['adding'] = function(instance)
             if instance:IsA('Model')
             and
-            (settings.checks.humanoid_check and instance:FindFirstChild('Humanoid') or not settings.checks.humanoid_check)
+            (settings.checks.humanoid_check and instance:FindFirstChildWhichIsA('Humanoid') or not settings.checks.humanoid_check)
             and
             (settings.checks.hrp_check and instance:FindFirstChild('HumanoidRootPart') or not settings.checks.hrp_check)
             then
@@ -87,7 +89,7 @@ function startaddingnpcs(npcpath)
         end,
         ['removing'] = function(instance)
             if instance:IsA('Model') and
-            (settings.checks.humanoid_check and instance:FindFirstChild('Humanoid') or not settings.checks.humanoid_check)
+            (settings.checks.humanoid_check and instance:FindFirstChildWhichIsA('Humanoid') or not settings.checks.humanoid_check)
             and
             (settings.checks.hrp_check and instance:FindFirstChild('HumanoidRootPart') or not settings.checks.hrp_check)
             then
