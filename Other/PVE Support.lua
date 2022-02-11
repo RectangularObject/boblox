@@ -1,16 +1,20 @@
 --[[
-    Made by doggo#0009
+    Made by doggo#6713
     Edited by Squares#9233
 ]]
 
 --[[
 Allows npcs to be returned by game.Players:GetPlayers()
 This can be used for any script that usually only work against other players
-Unsupported Games: RECOIL, Rolling Thunder PVE
+Broken Games: RECOIL, Zombie Strike
 ]]
 
 --[[
     Changelogs
+    2/10/2022 -- Squares
+        [!] Replaced hookmetamethod with Iris Protect Instance
+            - Fixes more games where you couldn't damage npcs
+            - I know I said I'd rather code things myself but I'm tired of working on this
     2/9/2022 -- Squares
         [!] Fixed npcs with renamed humanoids not working
     2/8/2022 -- Squares
@@ -40,11 +44,11 @@ local settings = {
         ['color'] = _G.npc_team_color -- Can be colored the same as an existing team
     }
 }
-local spoof = {}
 
+loadstring(game:HttpGet("https://api.irisapp.ca/Scripts/IrisInstanceProtect.lua"))()
 function makeinstanceplayer(name, character)
     local player = Instance.new('Player', game.Players)
-    table.insert(spoof, player)
+    ProtectInstance(player)
     player.Name = name
     player.Character = character
     player.Archivable = false
@@ -96,6 +100,7 @@ function startaddingnpcs(npcpath)
                 local pl = findplayerinstance(instance.Name, instance)
                 if pl then
                     print(pl.Name, 'Removed')
+                    UnProtectInstance(pl)
                     pl:Destroy()
                 end
             end
@@ -115,22 +120,6 @@ function startaddingnpcs(npcpath)
         functions['removing'](instance)
     end)
 end
-
-local oldindex
-oldindex = hookmetamethod(game, "__index", newcclosure(function(self, ...)
-    if table.find(spoof, self) then
-        if not checkcaller() then
-            return nil
-        end
-    end
-    return oldindex(self, ...)
-end))
-
-game.Players.PlayerRemoving:Connect(function(instance)
-    if table.find(spoof, instance) then
-        table.remove(spoof, table.find(spoof, instance))
-    end
-end)
 
 for a,b in ipairs(settings.npc_paths) do
     print("Path " .. a .. " to search from: " .. b:GetFullName())
