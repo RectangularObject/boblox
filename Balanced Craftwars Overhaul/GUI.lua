@@ -5,7 +5,7 @@
 -- prob gonna get patched really quick
 -- if it does then someone else can unpatch it, I'm not coming back to this
 getgenv().noAbilityCooldownsEnabled = false
-getgenv().getgenv().noCooldowns = function()
+getgenv().noCooldowns = function()
     while getgenv().noAbilityCooldownsEnabled do task.wait()
         pcall(function()
             game.Players.LocalPlayer.AbilityCD1:Destroy()
