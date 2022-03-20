@@ -30,7 +30,7 @@ local function mobFarm()
 							until not mobFarmBossOnly or humanoid.Health <= 0
 						end
 						local character = lPlayer.Character or lPlayer.CharacterAdded:Wait()
-                        -- get any sword in your backpack or character
+						-- get any sword in your backpack or character
 						local sword = lPlayer.Backpack:FindFirstChild("SwordControl", true) or character:FindFirstChild("SwordControl", true)
 						if sword then
 							sword = sword.Parent
@@ -60,12 +60,12 @@ local function oreFarm()
 		task.wait()
 		local function mine(ore)
 			if ore:IsA("Model") and ore:FindFirstChild("MineralMain") then
-                -- all this crap to make sure the ore is loaded before trying to mine it
+				-- all this crap to make sure the ore is loaded before trying to mine it
 				local properties = ore:WaitForChild("Properties")
 				local hitpoints = properties:WaitForChild("Hitpoint")
 				local toughness = properties:WaitForChild("Toughness")
 				local owner = properties:WaitForChild("Owner")
-                -- get any pickaxe in your backpack or character
+				-- get any pickaxe in your backpack or character
 				local pickaxe = lPlayer.Backpack:FindFirstChild("PickaxeControl", true) or lPlayer.Character:FindFirstChild("PickaxeControl", true)
 				local character = lPlayer.Character or lPlayer.CharacterAdded:Wait()
 				local rPart = character:WaitForChild("HumanoidRootPart")
@@ -92,7 +92,7 @@ local function oreFarm()
 				end
 			end
 		end
-        -- this is self-explanatory
+		-- this is self-explanatory
 		for _, ore in pairs(oreFolder:GetChildren()) do
 			if oreListMode == "Whitelist" then
 				if table.find(oreList, ore.Name) then
@@ -116,12 +116,12 @@ local function godmodeHeal()
 			if not godmodeHealEnabled then
 				return
 			end
-            -- get any healing item
+			-- get any healing item
 			local heal = lPlayer.Backpack:FindFirstChild("Heal", true) or lPlayer.Character:FindFirstChild("Heal", true)
 			if heal then -- I realize this is redundant because of the loop condition but whatever I was tired
 				heal = heal.Parent
 				coroutine.wrap(function() -- coroutine to do it as fast as the loop loops
-					heal.RemoteFunction:InvokeServer("hit", {lPlayer.Character:WaitForChild("Humanoid"), heal.Heal.Value, lPlayer.Character:WaitForChild("Torso")})
+					heal.RemoteFunction:InvokeServer("hit", { lPlayer.Character:WaitForChild("Humanoid"), heal.Heal.Value, lPlayer.Character:WaitForChild("Torso") })
 				end)()
 			end
 		end
@@ -158,8 +158,8 @@ _G.noCooldowns = function()
 			game.Players.LocalPlayer.AbilityCD1:Destroy() -- so delete it :D
 		end)
 		for _, b in pairs(getreg()) do -- this was why it lags if it was obfuscated
-            -- I'm not gonna explain the rest of this code because it's not patched yet
-            -- any competent dev knows what this does
+			-- I'm not gonna explain the rest of this code because it's not patched yet
+			-- any competent dev knows what this does
 			if type(b) == "function" then
 				if getfenv(b).script == game.Players.LocalPlayer.Character:FindFirstChild("SwordControl", true) or game.Players.LocalPlayer.Character:FindFirstChild("SpearControl", true) then
 					local sus = getupvalues(b)
@@ -270,7 +270,7 @@ local miscnoCooldownsToggle = miscSection:CreateToggle({
 	end,
 })
 local miscFunny = miscSection:CreateLabel({
-    -- lol half the cheat is patched what's the point
+	-- lol half the cheat is patched what's the point
 	Name = "\n\n\n\n\n\n\n\n\n\n\nI don't recommend using\nthis in public servers anymore\nIt's really easy to catch\ncheaters in this game\nsince the update on\n3/19/2022 which made a\nbunch of stuff serversided",
 })
 
