@@ -34,11 +34,10 @@ local mainWindow = Library:CreateWindow("Personal object of abuse")
 
 local mainTab = mainWindow:AddTab("Main")
 local mainGroupbox = mainTab:AddLeftGroupbox("Hitbox Extender")
-local teamsGroupbox = mainTab:AddRightGroupbox("Friends & Teams")
+local ignoresGroupbox = mainTab:AddRightGroupbox("Ignores")
 local miscGroupbox = mainTab:AddLeftGroupbox("Misc")
 
 local extenderToggled = mainGroupbox:AddToggle("extenderToggled", {Text = "Toggle"})
-local extenderSitCheck = mainGroupbox:AddToggle("extenderSitCheck", {Text = "Disable on sitting players"})
 local extenderSize = mainGroupbox:AddSlider("extenderSize", {Text = "Size", Min = 2, Max = 100, Default = 10, Rounding = 0})
 local extenderTransparency = mainGroupbox:AddSlider("extenderTransparency", {Text = "Transparency", Min = 0, Max = 1, Default = 0.5, Rounding = 2})
 -- for some reason the save manager doesn't save inputs, idk how to fix it
@@ -46,15 +45,14 @@ local customPartNameInput = mainGroupbox:AddInput("customPartList", {Text = "Cus
 local extenderPartList = mainGroupbox:AddDropdown("extenderPartList", {Text = "Body Parts", AllowNull = true, Multi = true, Values = {"Custom Part", "Head", "HumanoidRootPart", "Torso", "Left Arm", "Right Arm", "Left Leg", "Right Leg"}, Default = "Head"})
 local extenderUpdateRate = miscGroupbox:AddSlider("extenderUpdateRate", {Text = "Update Rate", Min = 0, Max = 1000, Default = 0, Rounding = 0, Suffix = "ms"})
 
-local ignoreSelectedPlayersToggled = teamsGroupbox:AddToggle("ignoreSelectedPlayersToggled", {Text = "Ignore Selected Players"})
-local ignorePlayerList = teamsGroupbox:AddDropdown("ignorePlayerList", {Text = "Players", AllowNull = true, Multi = true, Values = playerNames})
-teamsGroupbox:AddDivider()
---local ignoreSelectedNpcsToggled = teamsGroupbox:AddToggle("ignoreSelectedNpcsToggled", {Text = "Ignore Selected Npcs"})
---local ignoreNpcList = teamsGroupbox:AddDropdown("ignoreNpcList", {Text = "Npcs", AllowNull = true, Multi = true, Values = npcNames})
---teamsGroupbox:AddDivider()
-local ignoreSelfTeamToggled = teamsGroupbox:AddToggle("ignoreSelfTeamToggled", {Text = "Ignore Own Team"})
-local ignoreSelectedTeamsToggled = teamsGroupbox:AddToggle("ignoreSelectedTeamsToggled", {Text = "Ignore Selected Teams"})
-local ignoreTeamList = teamsGroupbox:AddDropdown("ignoreTeamList", {Text = "Teams", AllowNull = true, Multi = true, Values = teamNames})
+local extenderSitCheck = ignoresGroupbox:AddToggle("extenderSitCheck", {Text = "Ignore Sitting Players"})
+local ignoreSelectedPlayersToggled = ignoresGroupbox:AddToggle("ignoreSelectedPlayersToggled", {Text = "Ignore Selected Players"})
+local ignorePlayerList = ignoresGroupbox:AddDropdown("ignorePlayerList", {Text = "Players", AllowNull = true, Multi = true, Values = playerNames})
+--local ignoreSelectedNpcsToggled = ignoresGroupbox:AddToggle("ignoreSelectedNpcsToggled", {Text = "Ignore Selected Npcs"})
+--local ignoreNpcList = ignoresGroupbox:AddDropdown("ignoreNpcList", {Text = "Npcs", AllowNull = true, Multi = true, Values = npcNames})
+local ignoreSelfTeamToggled = ignoresGroupbox:AddToggle("ignoreSelfTeamToggled", {Text = "Ignore Own Team"})
+local ignoreSelectedTeamsToggled = ignoresGroupbox:AddToggle("ignoreSelectedTeamsToggled", {Text = "Ignore Selected Teams"})
+local ignoreTeamList = ignoresGroupbox:AddDropdown("ignoreTeamList", {Text = "Teams", AllowNull = true, Multi = true, Values = teamNames})
 
 -- thanks roblox dev forum
 local function CheckTableEquality(t1,t2)
