@@ -112,7 +112,7 @@ end)
 SaveManager:BuildConfigSection(mainTab)
 SaveManager:LoadAutoloadConfig()
 
--- Returns a table of every possible bodypart in a character
+-- Returns a table of every possible bodypart in a character, or nil if the character does not exist.
 local function getBodyParts(character)
     local humanoid = character:WaitForChild("Humanoid")
     local parts = {
@@ -161,6 +161,7 @@ local function extendCharacter(character)
     local timer = 0
     local originals = {}
     local collisions = {}
+    local CharacterAdded = {}
     local bodyParts = getBodyParts(character)
     --Sets up original sizes, creates collision constraints, and creates hooks to bypass localscript anticheats
     local function setup(i, v)
@@ -204,7 +205,7 @@ local function extendCharacter(character)
                     collisions[i][o].Enabled = false
                     collisions[i][o].Part0 = v
                     collisions[i][o].Part1 = b
-                    lPlayer.CharacterAdded:Connect(function(char)
+                    CharacterAdded[i] = lPlayer.CharacterAdded:Connect(function(char)
                         local temp = char:WaitForChild(o)
                         collisions[i][o].Part1 = temp
                     end)
@@ -215,7 +216,7 @@ local function extendCharacter(character)
                             collisions[i][g].Enabled = false
                             collisions[i][g].Part0 = v
                             collisions[i][g].Part1 = z
-                            lPlayer.CharacterAdded:Connect(function(char)
+                            CharacterAdded[i] = lPlayer.CharacterAdded:Connect(function(char)
                                 local temp = char:WaitForChild(g)
                                 if temp:IsA("BasePart") then
                                     collisions[i][g].Part1 = temp
@@ -332,6 +333,9 @@ local function extendCharacter(character)
             local checks = getChecks()
             if checks == 2 then
                 reset("all")
+                for _,v in pairs(CharacterAdded) do
+                    v:Disconnect()
+                end
                 Heartbeat:Disconnect()
                 return
             elseif checks == 1 then
