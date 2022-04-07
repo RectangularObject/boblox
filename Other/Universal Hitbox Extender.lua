@@ -112,7 +112,7 @@ end)
 SaveManager:BuildConfigSection(mainTab)
 SaveManager:LoadAutoloadConfig()
 
--- Returns a table of every possible bodypart in a character, or nil if the character does not exist.
+-- Returns a table of every possible bodypart in a character
 local function getBodyParts(character)
     local humanoid = character:WaitForChild("Humanoid")
     local parts = {
