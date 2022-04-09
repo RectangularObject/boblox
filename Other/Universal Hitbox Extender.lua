@@ -114,43 +114,43 @@ SaveManager:LoadAutoloadConfig()
 
 -- Returns a table of every possible bodypart in a character, or nil if the character does not exist.
 local function getBodyParts(character)
-    local humanoid = character:WaitForChild("Humanoid")
     local parts = {
         Head = character:WaitForChild("Head"),
         HumanoidRootPart = character:WaitForChild("HumanoidRootPart"),
-        Humanoid = character:WaitForChild("Humanoid")
+        Humanoid = character:WaitForChild("Humanoid"),
+        Torso = {},
+        ["Left Arm"] = {},
+        ["Right Arm"] = {},
+        ["Left Leg"] = {},
+        ["Right Leg"] = {}
     }
-    if humanoid.RigType == Enum.HumanoidRigType.R6 then
-        parts.Torso = {Torso = character:WaitForChild("Torso")}
-        parts["Left Arm"] = {LeftArm = character:WaitForChild("Left Arm")}
-        parts["Right Arm"] = {RightArm = character:WaitForChild("Right Arm")}
-        parts["Left Leg"] = {LeftLeg = character:WaitForChild("Left Leg")}
-        parts["Right Leg"] = {RightLeg = character:WaitForChild("Right Leg")}
-    elseif humanoid.RigType == Enum.HumanoidRigType.R15 then
-        parts.Torso = {
-            UpperTorso = character:WaitForChild("UpperTorso"),
-            LowerTorso = character:WaitForChild("LowerTorso")
-        }
-        parts["Left Arm"] = {
-            LeftHand = character:WaitForChild("LeftHand"),
-            LeftLowerArm = character:WaitForChild("LeftLowerArm"),
-            LeftUpperArm = character:WaitForChild("LeftUpperArm")
-        }
-        parts["Right Arm"] = {
-            RightHand = character:WaitForChild("RightHand"),
-            RightLowerArm = character:WaitForChild("RightLowerArm"),
-            RightUpperArm = character:WaitForChild("RightUpperArm")
-        }
-        parts["Left Leg"] = {
-            LeftFoot = character:WaitForChild("LeftFoot"),
-            LeftLowerLeg = character:WaitForChild("LeftLowerLeg"),
-            LeftUpperLeg = character:WaitForChild("LeftUpperLeg")
-        }
-        parts["Right Leg"] = {
-            RightFoot = character:WaitForChild("RightFoot"),
-            RightLowerLeg = character:WaitForChild("RightLowerLeg"),
-            RightUpperLeg = character:WaitForChild("RightUpperLeg")
-        }
+    for _,v in pairs(character:GetChildren()) do
+        if v:IsA("BasePart") and parts.Humanoid:GetLimb(v) ~= Enum.Limb.Unknown then
+            if string.match(v.Name, "Torso") then
+                parts.Torso[v.Name] = v
+                continue
+            end
+            if string.match(v.Name, "Left") then
+                if string.match(v.Name, "Arm") or string.match(v.Name, "Hand") then
+                    parts["Left Arm"][v.Name] = v
+                    continue
+                end
+                if string.match(v.Name, "Leg") or string.match(v.Name, "Foot") then
+                    parts["Left Leg"][v.Name] = v
+                    continue
+                end
+            end
+            if string.match(v.Name, "Right") then
+                if string.match(v.Name, "Arm") or string.match(v.Name, "Hand") then
+                    parts["Right Arm"][v.Name] = v
+                    continue
+                end
+                if string.match(v.Name, "Leg") or string.match(v.Name, "Foot") then
+                    parts["Right Leg"][v.Name] = v
+                    continue
+                end
+            end
+        end
     end
     return parts
 end
@@ -396,18 +396,17 @@ for _,player in ipairs(game.Players:GetPlayers()) do
     if player ~= lPlayer then
         task.spawn(function()
             if player.Character then
-                -- why use coroutine.wrap after I've been abusing task.spawn? fuck you that's why
-                coroutine.wrap(extendCharacter)(player.Character)
+                extendCharacter(player.Character)
             end
             player.CharacterAdded:Connect(function(v)
-                coroutine.wrap(extendCharacter)(v)
+                extendCharacter(v)
             end)
         end)
     end
 end
 game.Players.PlayerAdded:Connect(function(player)
-        player.CharacterAdded:Connect(function(v)
-        coroutine.wrap(extendCharacter)(v)
+    player.CharacterAdded:Connect(function(v)
+        extendCharacter(v)
     end)
 end)
 -- now, where are my schizo meds?
