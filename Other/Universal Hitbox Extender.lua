@@ -1,8 +1,20 @@
 if not game:IsLoaded() then game.Loaded:Wait() end
 
+-- thanks 3ds and kiko metatables r hard (https://v3rmillion.net/showthread.php?tid=1089069)
+-- my version uses hookmetamethod :D
+if not getgenv().MTAPIMutex then loadstring(game:HttpGet("https://raw.githubusercontent.com/RectangularObject/MT-Api-vhookmetamethod/main/__source/mt-api%20v2.lua", true))() end
+-- thanks lego hacker I love you for making this (https://v3rmillion.net/showthread.php?tid=1140873)
+loadstring(game:HttpGet("https://raw.githubusercontent.com/LegoHacker1337/legohacks/main/PhysicsServiceOnClient.lua"))()
+
 local lPlayer = game.Players.LocalPlayer
--- thanks 3ds and kiko metatables r hard
-if not getgenv().MTAPIMutex then loadstring(game:HttpGet("https://raw.githubusercontent.com/KikoTheDon/MT-Api-v2/main/__source/mt-api%20v2.lua", true))() end
+local physService = game:GetService("PhysicsService")
+
+physService:CreateCollisionGroup("squarehookhackcheatexploit")
+physService:CollisionGroupSetCollidable("squarehookhackcheatexploit", "squarehookhackcheatexploit", false)
+
+if game.PlaceId == 4716045691 then -- Polybattle
+    physService:CollisionGroupSetCollidable("squarehookhackcheatexploit", "viewModel", false)
+end
 
 if game.PlaceId == 111311599 then -- Critical Strike
     local anticheat = game:GetService("ReplicatedFirst")["Serverbased AntiCheat"] -- then why put it in a localscript?
@@ -20,10 +32,6 @@ if game.PlaceId == 111311599 then -- Critical Strike
     anticheat.Disabled = true
 end
 
-local playerNames = {}
---local npcNames = {} -- I was planning on adding npc support
-local teamNames = {}
-
 -- thanks inori and wally
 local Library = loadstring(game:HttpGet('https://raw.githubusercontent.com/wally-rblx/LinoriaLib/main/Library.lua'))()
 local SaveManager = loadstring(game:HttpGet('https://raw.githubusercontent.com/wally-rblx/LinoriaLib/main/addons/SaveManager.lua'))()
@@ -38,12 +46,16 @@ local ignoresGroupbox = mainTab:AddRightGroupbox("Ignores")
 local miscGroupbox = mainTab:AddLeftGroupbox("Misc")
 
 local extenderToggled = mainGroupbox:AddToggle("extenderToggled", {Text = "Toggle"})
-local extenderSize = mainGroupbox:AddSlider("extenderSize", {Text = "Size", Min = 2, Max = 100, Default = 10, Rounding = 0})
+local extenderSize = mainGroupbox:AddSlider("extenderSize", {Text = "Size", Min = 2, Max = 50, Default = 10, Rounding = 1})
 local extenderTransparency = mainGroupbox:AddSlider("extenderTransparency", {Text = "Transparency", Min = 0, Max = 1, Default = 0.5, Rounding = 2})
 -- for some reason the save manager doesn't save inputs, idk how to fix it
 local customPartNameInput = mainGroupbox:AddInput("customPartList", {Text = "Custom Part Name", Default = "HeadHB"})
 local extenderPartList = mainGroupbox:AddDropdown("extenderPartList", {Text = "Body Parts", AllowNull = true, Multi = true, Values = {"Custom Part", "Head", "HumanoidRootPart", "Torso", "Left Arm", "Right Arm", "Left Leg", "Right Leg"}, Default = "Head"})
 local extenderUpdateRate = miscGroupbox:AddSlider("extenderUpdateRate", {Text = "Update Rate", Min = 0, Max = 1000, Default = 0, Rounding = 0, Suffix = "ms"})
+
+local playerNames = {}
+--local npcNames = {} -- I was planning on adding npc support
+local teamNames = {}
 
 local extenderSitCheck = ignoresGroupbox:AddToggle("extenderSitCheck", {Text = "Ignore Sitting Players"})
 local ignoreSelectedPlayersToggled = ignoresGroupbox:AddToggle("ignoreSelectedPlayersToggled", {Text = "Ignore Selected Players"})
@@ -160,7 +172,6 @@ local function extendCharacter(character)
     local player = game.Players:GetPlayerFromCharacter(character)
     local timer = 0
     local originals = {}
-    local collisions = {}
     local CharacterAdded = {}
     local bodyParts = getBodyParts(character)
     --Sets up original sizes, creates collision constraints, and creates hooks to bypass localscript anticheats
@@ -169,12 +180,12 @@ local function extendCharacter(character)
             originals[i] = {}
             originals[i].Size = v.Size
             originals[i].Transparency = v.Transparency
-            originals[i].CanCollide = v.CanCollide
             originals[i].Massless = v.Massless
+            originals[i].CollisionGroup = physService:GetCollisionGroupName(v.CollisionGroupId)
             local sizeHook = v:AddGetHook("Size", originals[i].Size)
             local transparencyHook = v:AddGetHook("Transparency", originals[i].Transparency)
-            local canCollideHook = v:AddGetHook("CanCollide", originals[i].CanCollide)
             local masslessHook = v:AddGetHook("Massless", originals[i].Massless)
+            local collisionHook = v:AddGetHook("CollisionGroupId", physService:GetCollisionGroupId(originals[i].CollisionGroup))
             v:AddSetHook("Size", function(self, value)
                 originals[i].Size = value
                 sizeHook:Modify("Size", value)
@@ -185,47 +196,16 @@ local function extendCharacter(character)
                 transparencyHook:Modify("Transparency", value)
                 return value
             end)
-            v:AddSetHook("CanCollide", function(self, value)
-                originals[i].CanCollide = value
-                canCollideHook:Modify("CanCollide", value)
-                return value
-            end)
             v:AddSetHook("Massless", function(self, value)
                 originals[i].Massless = value
                 masslessHook:Modify("Massless", value)
                 return value
             end)
-        end
-        if not collisions[i] then
-            collisions[i] = {}
-            -- thanks to GameGuy#5286 for telling me collision constraints exist
-            for o,b in pairs(getBodyParts(lPlayer.Character)) do
-                if o ~= "Humanoid" and type(b) ~= "table" then
-                    collisions[i][o] = Instance.new("NoCollisionConstraint", v)
-                    collisions[i][o].Enabled = false
-                    collisions[i][o].Part0 = v
-                    collisions[i][o].Part1 = b
-                    CharacterAdded[i] = lPlayer.CharacterAdded:Connect(function(char)
-                        local temp = char:WaitForChild(o)
-                        collisions[i][o].Part1 = temp
-                    end)
-                elseif type(b) == "table" then
-                    for g,z in pairs(b) do
-                        if z:IsA("BasePart") then
-                            collisions[i][g] = Instance.new("NoCollisionConstraint", v)
-                            collisions[i][g].Enabled = false
-                            collisions[i][g].Part0 = v
-                            collisions[i][g].Part1 = z
-                            CharacterAdded[i] = lPlayer.CharacterAdded:Connect(function(char)
-                                local temp = char:WaitForChild(g)
-                                if temp:IsA("BasePart") then
-                                    collisions[i][g].Part1 = temp
-                                end
-                            end)
-                        end
-                    end
-                end
-            end
+            v:AddSetHook("CollisionGroupId", function(self, value)
+                originals[i].CollisionGroup = physService:GetCollisionGroupName(value)
+                collisionHook:Modify("CollisionGroupId", value)
+                return value
+            end)
         end
     end
     do
@@ -257,8 +237,8 @@ local function extendCharacter(character)
             if customPart and customPart:IsA("BasePart") then
                 customPart.Size = originals[customPart.Name].Size
                 customPart.Transparency = originals[customPart.Name].Transparency
-                customPart.CanCollide = originals[customPart.Name].CanCollide
                 customPart.Massless = originals[customPart.Name].Massless
+                physService:SetPartCollisionGroup(customPart, originals[customPart.Name].CollisionGroup)
             end
         end
         for i,v in pairs(bodyParts) do
@@ -266,18 +246,14 @@ local function extendCharacter(character)
                 if i ~= "Humanoid" and type(v) ~= "table" then
                     v.Size = originals[i].Size
                     v.Transparency = originals[i].Transparency
-                    v.CanCollide = originals[i].CanCollide
                     v.Massless = originals[i].Massless
+                    physService:SetPartCollisionGroup(v, originals[i].CollisionGroup)
                 elseif type(v) == "table" then
                     for o,b in pairs(v) do
                         b.Size = originals[o].Size
                         b.Transparency = originals[o].Transparency
                         b.Massless = originals[o].Massless
-                        for _,z in pairs(collisions[o]) do
-                            if z.Enabled == true and z.Part0 == b then
-                                z.Enabled = false
-                            end
-                        end
+                        physService:SetPartCollisionGroup(b, originals[o].CollisionGroup)
                     end
                 end
             end
@@ -327,7 +303,7 @@ local function extendCharacter(character)
     local Heartbeat
     Heartbeat = game:GetService("RunService").Heartbeat:Connect(function(deltaTime)
         timer += deltaTime
-        if timer >= (extenderUpdateRate.Value / 100) then -- divided by 100 because milliseconds
+        if timer >= (extenderUpdateRate.Value / 1000) then -- divided by 1000 because milliseconds
             timer = 0
             local bodyPartList = extenderPartList:GetActiveValues()
             local checks = getChecks()
@@ -346,10 +322,10 @@ local function extendCharacter(character)
                 if table.find(bodyPartList, "Custom Part") then
                     local customPart = character:FindFirstChild(customPartNameInput.Value)
                     if customPart then
+                        customPart.Massless = true
+                        physService:SetPartCollisionGroup(customPart, "squarehookhackcheatexploit")
                         customPart.Size = Vector3.new(extenderSize.Value, extenderSize.Value, extenderSize.Value)
                         customPart.Transparency = extenderTransparency.Value
-                        customPart.CanCollide = false
-                        customPart.Massless = true
                     end
                 else
                     reset("custompart")
@@ -360,19 +336,15 @@ local function extendCharacter(character)
                             if i ~= "HumanoidRootPart" then
                                 v.Massless = true
                             end
+                            physService:SetPartCollisionGroup(v, "squarehookhackcheatexploit")
                             v.Size = Vector3.new(extenderSize.Value, extenderSize.Value, extenderSize.Value)
                             v.Transparency = extenderTransparency.Value
-                            v.CanCollide = false
                         else
                             for o,b in pairs(v) do
                                 b.Massless = true
+                                physService:SetPartCollisionGroup(b, "squarehookhackcheatexploit")
                                 b.Size = Vector3.new(extenderSize.Value, extenderSize.Value, extenderSize.Value)
                                 b.Transparency = extenderTransparency.Value
-                                for _,z in pairs(collisions[o]) do
-                                    if z.Enabled == false and z.Part0 == b then
-                                        z.Enabled = true
-                                    end
-                                end
                             end
                         end
                     else
@@ -388,6 +360,9 @@ local function extendCharacter(character)
     PlayerRemoving = game.Players.PlayerRemoving:Connect(function(v)
         if v == player then
             Heartbeat:Disconnect()
+            for _,b in pairs(CharacterAdded) do
+                b:Disconnect()
+            end
             PlayerRemoving:Disconnect()
         end
     end)
@@ -402,6 +377,23 @@ for _,player in ipairs(game.Players:GetPlayers()) do
                 extendCharacter(v)
             end)
         end)
+    else
+        local function onCharacterAdded(character)
+            local bodyParts = getBodyParts(character)
+            for i,v in pairs(bodyParts) do
+                if i ~= "Humanoid" and type(v) ~= "table" then
+                    physService:SetPartCollisionGroup(v, "squarehookhackcheatexploit")
+                elseif type(v) == "table" then
+                    for o,b in pairs(v) do
+                        physService:SetPartCollisionGroup(b, "squarehookhackcheatexploit")
+                    end
+                end
+            end
+        end
+        player.CharacterAdded:Connect(onCharacterAdded)
+        if player.Character then
+            onCharacterAdded(player.Character)
+        end
     end
 end
 game.Players.PlayerAdded:Connect(function(player)
