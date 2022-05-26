@@ -48,7 +48,6 @@ local miscGroupbox = mainTab:AddLeftGroupbox("Misc")
 local extenderToggled = mainGroupbox:AddToggle("extenderToggled", {Text = "Toggle"})
 local extenderSize = mainGroupbox:AddSlider("extenderSize", {Text = "Size", Min = 2, Max = 50, Default = 10, Rounding = 1})
 local extenderTransparency = mainGroupbox:AddSlider("extenderTransparency", {Text = "Transparency", Min = 0, Max = 1, Default = 0.5, Rounding = 2})
--- for some reason the save manager doesn't save inputs, idk how to fix it
 local customPartNameInput = mainGroupbox:AddInput("customPartList", {Text = "Custom Part Name", Default = "HeadHB"})
 local extenderPartList = mainGroupbox:AddDropdown("extenderPartList", {Text = "Body Parts", AllowNull = true, Multi = true, Values = {"Custom Part", "Head", "HumanoidRootPart", "Torso", "Left Arm", "Right Arm", "Left Leg", "Right Leg"}, Default = "Head"})
 local extenderUpdateRate = miscGroupbox:AddSlider("extenderUpdateRate", {Text = "Update Rate", Min = 0, Max = 1000, Default = 0, Rounding = 0, Suffix = "ms"})
