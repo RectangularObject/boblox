@@ -16,6 +16,10 @@ if game.PlaceId == 4716045691 then -- Polybattle
     physService:CollisionGroupSetCollidable("squarehookhackcheatexploit", "viewModel", false)
 end
 
+if game.PlaceId == 2732246600 then -- Bloody Battle
+    physService:CollisionGroupSetCollidable("squarehookhackcheatexploit", "root", false)
+end
+
 if game.PlaceId == 111311599 then -- Critical Strike
     local anticheat = game:GetService("ReplicatedFirst")["Serverbased AntiCheat"] -- then why put it in a localscript?
     -- I literally copied the rest of this from the "Serverbased Anticheat"
@@ -48,6 +52,7 @@ local miscGroupbox = mainTab:AddLeftGroupbox("Misc")
 local extenderToggled = mainGroupbox:AddToggle("extenderToggled", {Text = "Toggle"})
 local extenderSize = mainGroupbox:AddSlider("extenderSize", {Text = "Size", Min = 2, Max = 50, Default = 10, Rounding = 1})
 local extenderTransparency = mainGroupbox:AddSlider("extenderTransparency", {Text = "Transparency", Min = 0, Max = 1, Default = 0.5, Rounding = 2})
+-- for some reason the save manager doesn't save inputs, idk how to fix it
 local customPartNameInput = mainGroupbox:AddInput("customPartList", {Text = "Custom Part Name", Default = "HeadHB"})
 local extenderPartList = mainGroupbox:AddDropdown("extenderPartList", {Text = "Body Parts", AllowNull = true, Multi = true, Values = {"Custom Part", "Head", "HumanoidRootPart", "Torso", "Left Arm", "Right Arm", "Left Leg", "Right Leg"}, Default = "Head"})
 local extenderUpdateRate = miscGroupbox:AddSlider("extenderUpdateRate", {Text = "Update Rate", Min = 0, Max = 1000, Default = 0, Rounding = 0, Suffix = "ms"})
@@ -369,25 +374,24 @@ end
 for _,player in ipairs(game.Players:GetPlayers()) do
     if player ~= lPlayer then
         task.spawn(function()
-            if player.Character then
-                extendCharacter(player.Character)
-            end
             player.CharacterAdded:Connect(function(v)
                 extendCharacter(v)
             end)
+            if player.Character then
+                extendCharacter(player.Character)
+            end
         end)
     else
-        local function onCharacterAdded(character)
-            local bodyParts = getBodyParts(character)
-            for i,v in pairs(bodyParts) do
-                if i ~= "Humanoid" and type(v) ~= "table" then
-                    physService:SetPartCollisionGroup(v, "squarehookhackcheatexploit")
-                elseif type(v) == "table" then
-                    for o,b in pairs(v) do
-                        physService:SetPartCollisionGroup(b, "squarehookhackcheatexploit")
-                    end
-                end
+        local function onDescendantAdded(descendant)
+            if descendant:IsA("BasePart") and not descendant:FindFirstAncestorWhichIsA("Tool") then
+                physService:SetPartCollisionGroup(descendant, "squarehookhackcheatexploit")
             end
+        end
+        local function onCharacterAdded(character)
+            for _,v in pairs(character:GetDescendants()) do
+                onDescendantAdded(v)
+            end
+            character.DescendantAdded:Connect(onDescendantAdded)
         end
         player.CharacterAdded:Connect(onCharacterAdded)
         if player.Character then
