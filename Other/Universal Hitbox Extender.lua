@@ -12,6 +12,10 @@ local physService = game:GetService("PhysicsService")
 physService:CreateCollisionGroup("squarehookhackcheatexploit")
 physService:CollisionGroupSetCollidable("squarehookhackcheatexploit", "squarehookhackcheatexploit", false)
 
+if game.PlaceId == 4716045691 then -- Polybattle
+    physService:CollisionGroupSetCollidable("squarehookhackcheatexploit", "viewModel", false)
+end
+
 if game.PlaceId == 2732246600 then -- Bloody Battle
     physService:CollisionGroupSetCollidable("squarehookhackcheatexploit", "root", false)
 end
