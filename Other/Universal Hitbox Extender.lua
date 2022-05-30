@@ -61,6 +61,7 @@ local playerNames = {}
 local teamNames = {}
 
 local extenderSitCheck = ignoresGroupbox:AddToggle("extenderSitCheck", {Text = "Ignore Sitting Players"})
+local extenderFFCheck = ignoresGroupbox:AddToggle("extenderFFCheck", {Text = "Ignore Forcefielded Players"})
 local ignoreSelectedPlayersToggled = ignoresGroupbox:AddToggle("ignoreSelectedPlayersToggled", {Text = "Ignore Selected Players"})
 local ignorePlayerList = ignoresGroupbox:AddDropdown("ignorePlayerList", {Text = "Players", AllowNull = true, Multi = true, Values = playerNames})
 --local ignoreSelectedNpcsToggled = ignoresGroupbox:AddToggle("ignoreSelectedNpcsToggled", {Text = "Ignore Selected Npcs"})
@@ -263,11 +264,17 @@ local function extendCharacter(character)
         end
     end
     local function getChecks()
-        if bodyParts.Humanoid:GetState() == Enum.HumanoidStateType.Dead then
+        if bodyParts.Humanoid:GetState() == Enum.HumanoidStateType.Dead or bodyParts.Humanoid.Health <= 0 then
             return 2
         end
         if extenderSitCheck.Value then
             if bodyParts.Humanoid.Sit then
+                return 1
+            end
+        end
+        if extenderFFCheck.Value then
+            local ff = character:FindFirstChildWhichIsA("ForceField", true)
+            if ff and ff.Visible then
                 return 1
             end
         end
