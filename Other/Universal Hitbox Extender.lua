@@ -12,6 +12,10 @@ local physService = game:GetService("PhysicsService")
 physService:CreateCollisionGroup("squarehookhackcheatexploit")
 physService:CollisionGroupSetCollidable("squarehookhackcheatexploit", "squarehookhackcheatexploit", false)
 
+if game.PlaceId == 8203181639 then -- Syrian Shenanigans
+    physService:CollisionGroupSetCollidable("squarehookhackcheatexploit", "Plugin_Unselectable_Group", false)
+end
+
 if game.PlaceId == 2158109152 then -- Weapon Kit
     physService:CollisionGroupSetCollidable("squarehookhackcheatexploit", "NONE", false)
 end
