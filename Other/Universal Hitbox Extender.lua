@@ -290,7 +290,7 @@ local function extendCharacter(character)
                     return 1
                 end
             elseif game.PlaceId == 2158109152 then
-                local friendly = character:FindFirstChild("Friendly")
+                local friendly = character:FindFirstChild("Friendly", true)
                 if friendly then
                     return 1
                 end
