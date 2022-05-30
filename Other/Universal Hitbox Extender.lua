@@ -12,10 +12,6 @@ local physService = game:GetService("PhysicsService")
 physService:CreateCollisionGroup("squarehookhackcheatexploit")
 physService:CollisionGroupSetCollidable("squarehookhackcheatexploit", "squarehookhackcheatexploit", false)
 
-if game.PlaceId == 4716045691 then -- Polybattle
-    physService:CollisionGroupSetCollidable("squarehookhackcheatexploit", "viewModel", false)
-end
-
 if game.PlaceId == 2732246600 then -- Bloody Battle
     physService:CollisionGroupSetCollidable("squarehookhackcheatexploit", "root", false)
 end
@@ -287,6 +283,11 @@ local function extendCharacter(character)
                     playerTeam = bodyParts.HumanoidRootPart.BrickColor
                 end)
                 if selfTeam == playerTeam then
+                    return 1
+                end
+            elseif game.PlaceId == 2158109152 then
+                local friendly = character:FindFirstChild("Friendly")
+                if friendly then
                     return 1
                 end
             else
