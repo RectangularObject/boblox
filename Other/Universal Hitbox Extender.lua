@@ -12,6 +12,10 @@ local physService = game:GetService("PhysicsService")
 physService:CreateCollisionGroup("squarehookhackcheatexploit")
 physService:CollisionGroupSetCollidable("squarehookhackcheatexploit", "squarehookhackcheatexploit", false)
 
+if game.PlaceId == 2158109152 then -- Weapon Kit
+    physService:CollisionGroupSetCollidable("squarehookhackcheatexploit", "NONE", false)
+end
+
 if game.PlaceId == 4716045691 then -- Polybattle
     physService:CollisionGroupSetCollidable("squarehookhackcheatexploit", "viewModel", false)
 end
@@ -394,7 +398,7 @@ for _,player in ipairs(game.Players:GetPlayers()) do
         end)
     else
         local function onDescendantAdded(descendant)
-            if descendant:IsA("BasePart") and not descendant:FindFirstAncestorWhichIsA("Tool") then
+            if descendant:IsA("BasePart") then
                 physService:SetPartCollisionGroup(descendant, "squarehookhackcheatexploit")
             end
         end
