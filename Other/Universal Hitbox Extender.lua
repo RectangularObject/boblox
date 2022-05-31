@@ -29,7 +29,7 @@ task.spawn(function()
                 local result = physService:CollisionGroupsAreCollidable(v.name, b.name)
                 if not result then
                     disableCollisions(b.name)
-                    print("Disabled collisions for:", b.name)
+                    --print("Disabled collisions for", b.name)
                 end
             end
         end
