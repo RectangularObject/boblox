@@ -297,12 +297,12 @@ local function addCharacter(character)
 		if player.Character ~= character or player.Character == nil then
 			return 2
 		end
-		if game.PlaceId == 6172932937 then
+		if game.PlaceId == 6172932937 then -- Energy Assault
 			if player.ragdolled.Value then
 				return 1
 			end
 		end
-		if game.PlaceId == 633284182 then
+		if game.PlaceId == 633284182 then -- Fireteam
 			local success, result = pcall(function()
 				if character.Torso.NeckBallSocket.Enabled then
 					return true
