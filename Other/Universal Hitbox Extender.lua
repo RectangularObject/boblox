@@ -316,7 +316,7 @@ local function addCharacter(character)
             return 2
         end
         if game.PlaceId == 633284182 then
-            pcall(function()
+            return pcall(function()
                 if character.Torso.NeckBallSocket.Enabled then
                     return 2
                 end
