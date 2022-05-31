@@ -159,18 +159,24 @@ SaveManager:LoadAutoloadConfig()
 Library:Notify("hai :3")
 Library:Notify("Press right ctrl to open the menu")
 
+local function WaitForChildWhichIsA(parent, name)
+    while not parent:FindFirstChildWhichIsA(name) do task.wait() if parent == nil then return nil end end
+    return parent:FindFirstChildWhichIsA(name)
+end
+
 -- Returns a table of every possible bodypart in a character, or nil if the character does not exist.
 local function getBodyParts(character)
     local parts = {
         Head = character:WaitForChild("Head"),
         HumanoidRootPart = character:WaitForChild("HumanoidRootPart"),
-        Humanoid = character:WaitForChild("Humanoid"),
+        Humanoid = WaitForChildWhichIsA(character, "Humanoid"),
         Torso = {},
         ["Left Arm"] = {},
         ["Right Arm"] = {},
         ["Left Leg"] = {},
         ["Right Leg"] = {}
     }
+    if parts.Humanoid == nil then return nil end
     for _,v in pairs(character:GetChildren()) do
         if v:IsA("BasePart") and parts.Humanoid:GetLimb(v) ~= Enum.Limb.Unknown then
             if string.match(v.Name, "Torso") then
@@ -212,6 +218,7 @@ local function addCharacter(character)
     local timer = 0
     local originals = {}
     local bodyParts = getBodyParts(character)
+    if bodyParts == nil then nameEsp:Remove(); chams:Destroy() return end
     -- Sets up original sizes and creates hooks to bypass localscript anticheats
     local function setup(i, v)
         if not originals[i] then
@@ -286,6 +293,9 @@ local function addCharacter(character)
         end
     end
     local function getChecks()
+        if game.Players:GetPlayerFromCharacter(character) ~= player then
+            return 2
+        end
         if bodyParts.Humanoid:GetState() == Enum.HumanoidStateType.Dead or bodyParts.Humanoid.Health <= 0 then
             return 2
         end
