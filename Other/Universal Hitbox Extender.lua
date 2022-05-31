@@ -14,7 +14,23 @@ local physService = game:GetService("PhysicsService")
 physService:CreateCollisionGroup("squarehookhackcheatexploit")
 physService:CollisionGroupSetCollidable("squarehookhackcheatexploit", "squarehookhackcheatexploit", false)
 
-if game.GameId == 1054526971 then
+if game.PlaceId == 633284182 then -- Fireteam
+    -- aids
+    task.spawn(function()
+        while true do task.wait(1)
+            physService:CollisionGroupSetCollidable("squarehookhackcheatexploit", "SoundBoxes", false)
+            physService:CollisionGroupSetCollidable("squarehookhackcheatexploit", "Freebody", false)
+            physService:CollisionGroupSetCollidable("squarehookhackcheatexploit", "Interactable", false)
+            physService:CollisionGroupSetCollidable("squarehookhackcheatexploit", "CaptureRegion", false)
+            physService:CollisionGroupSetCollidable("squarehookhackcheatexploit", "MedicalInteract", false)
+            physService:CollisionGroupSetCollidable("squarehookhackcheatexploit", "Noninteract", false)
+            physService:CollisionGroupSetCollidable("squarehookhackcheatexploit", "WeaponIgnoreList", false)
+            physService:CollisionGroupSetCollidable("squarehookhackcheatexploit", "Players", false)
+        end
+    end)
+end
+
+if game.GameId == 1054526971 then -- brm5
     physService:CollisionGroupSetCollidable("squarehookhackcheatexploit", "CharacterGroup", false)
     physService:CollisionGroupSetCollidable("squarehookhackcheatexploit", "RagdollGroup", false)
 end
@@ -299,6 +315,13 @@ local function addCharacter(character)
         if bodyParts.Humanoid:GetState() == Enum.HumanoidStateType.Dead or bodyParts.Humanoid.Health <= 0 then
             return 2
         end
+        if game.PlaceId == 633284182 then
+            pcall(function()
+                if character.Torso.NeckBallSocket.Enabled then
+                    return 2
+                end
+            end)
+        end
         if extenderSitCheck.Value then
             if bodyParts.Humanoid.Sit then
                 return 1
@@ -321,9 +344,19 @@ local function addCharacter(character)
                 if selfTeam == playerTeam then
                     return 1
                 end
-            elseif game.PlaceId == 2158109152 then
+            elseif game.PlaceId == 2158109152 then -- Weapon Kit
                 local friendly = character:FindFirstChild("Friendly", true)
                 if friendly then
+                    return 1
+                end
+            elseif game.PlaceId == 633284182 then -- Fireteam
+                local selfTeam
+                local playerTeam
+                pcall(function()
+                    selfTeam = lPlayer.PlayerData.TeamValue.Value
+                    playerTeam = player.PlayerData.TeamValue.Value
+                end)
+                if selfTeam == playerTeam then
                     return 1
                 end
             else
@@ -443,6 +476,7 @@ local function addCharacter(character)
             end
         end
         if espHighlightToggled.Value and checks == 0 then
+            chams.Parent = character
             if espHighlightUseTeamColor.Value then
                 chams.FillColor = player.TeamColor.Color
                 chams.OutlineColor = player.TeamColor.Color
