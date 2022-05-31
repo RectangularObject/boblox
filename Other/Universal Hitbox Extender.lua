@@ -10,6 +10,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/LegoHacker1337/legoha
 local Plrs = game:GetService'Players'
 local lPlayer = Plrs.LocalPlayer or Plrs.PlayerAdded:Wait()
 local physService = game:GetService("PhysicsService")
+local RunService = game:GetService'RunService'
 local collisiongroups = physService:GetCollisionGroups()
 local collisionsready = false
 
@@ -127,9 +128,10 @@ end)
 
 -- updates the team list
 task.spawn(function()
+	local Teams = game:GetService'Teams'
 	while true do task.wait()
 		local temp = {}
-		for i,v in pairs(game.Teams:GetTeams()) do
+		for i,v in pairs(Teams:GetTeams()) do
 			temp[i] = v.Name
 		end
 		if not CheckTableEquality(teamNames, temp) then
@@ -372,7 +374,7 @@ local function addCharacter(character)
 	-- loops and stuff
 	local nameEsp = Drawing.new("Text"); nameEsp.Center = true; nameEsp.Outline = true
 	local RenderStepped
-	RenderStepped = game:GetService("RunService").RenderStepped:Connect(function()
+	RenderStepped = RunService.RenderStepped:Connect(function()
 		if espNameToggled.Value then
 			local espPart = character:FindFirstChild("HumanoidRootPart")
 			if not espPart then
@@ -405,11 +407,12 @@ local function addCharacter(character)
 			nameEsp.Visible = false
 		end
 	end)
-	local chams = Instance.new("Highlight", character)
+	local chams = Instance.new("Highlight")
 	chams.Enabled = false
+	chams.Parent = character
 	--ProtectInstance(chams)
 	local Heartbeat
-	Heartbeat = game:GetService("RunService").Heartbeat:Connect(function(deltaTime)
+	Heartbeat = RunService.Heartbeat:Connect(function(deltaTime)
 		timer += deltaTime
 		local checks = getChecks()
 		if timer >= (extenderUpdateRate.Value / 1000) then -- divided by 1000 because milliseconds
