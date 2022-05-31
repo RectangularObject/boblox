@@ -5,6 +5,8 @@ if not game:IsLoaded() then game.Loaded:Wait() end
 if not getgenv().MTAPIMutex then loadstring(game:HttpGet("https://raw.githubusercontent.com/RectangularObject/MT-Api-vhookmetamethod/main/__source/mt-api%20v2.lua", true))() end
 -- thanks lego hacker I love you for making this (https://v3rmillion.net/showthread.php?tid=1140873)
 loadstring(game:HttpGet("https://raw.githubusercontent.com/LegoHacker1337/legohacks/main/PhysicsServiceOnClient.lua"))()
+-- thanks Iris (https://v3rmillion.net/showthread.php?pid=8154179)
+--loadstring(game:HttpGet("https://api.irisapp.ca/Scripts/IrisInstanceProtect.lua"))()
 
 local lPlayer = game.Players.LocalPlayer
 local physService = game:GetService("PhysicsService")
@@ -49,12 +51,12 @@ local Library = loadstring(game:HttpGet('https://raw.githubusercontent.com/wally
 local SaveManager = loadstring(game:HttpGet('https://raw.githubusercontent.com/wally-rblx/LinoriaLib/main/addons/SaveManager.lua'))()
 SaveManager:SetLibrary(Library)
 SaveManager:SetFolder("HitboxExtender")
-Library:Notify("hai :3")
-local mainWindow = Library:CreateWindow("Personal object of abuse")
 
+local mainWindow = Library:CreateWindow("cheaters get banned.")
 local mainTab = mainWindow:AddTab("Main")
 local mainGroupbox = mainTab:AddLeftGroupbox("Hitbox Extender")
 local ignoresGroupbox = mainTab:AddRightGroupbox("Ignores")
+local espGroupbox = mainTab:AddLeftGroupbox("ESP")
 local miscGroupbox = mainTab:AddLeftGroupbox("Misc")
 
 local extenderToggled = mainGroupbox:AddToggle("extenderToggled", {Text = "Toggle"})
@@ -63,6 +65,20 @@ local extenderTransparency = mainGroupbox:AddSlider("extenderTransparency", {Tex
 local customPartNameInput = mainGroupbox:AddInput("customPartList", {Text = "Custom Part Name", Default = "HeadHB"})
 local extenderPartList = mainGroupbox:AddDropdown("extenderPartList", {Text = "Body Parts", AllowNull = true, Multi = true, Values = {"Custom Part", "Head", "HumanoidRootPart", "Torso", "Left Arm", "Right Arm", "Left Leg", "Right Leg"}, Default = "Head"})
 local extenderUpdateRate = miscGroupbox:AddSlider("extenderUpdateRate", {Text = "Update Rate", Min = 0, Max = 1000, Default = 0, Rounding = 0, Suffix = "ms"})
+
+local espNameToggled = espGroupbox:AddToggle("espNameToggled", {Text = "Name"})
+:AddColorPicker("espNameColor1", {Title = "Fill Color", Default = Color3.fromRGB(255, 255, 255)})
+:AddColorPicker("espNameColor2", {Title = "Outline Color", Default = Color3.fromRGB(0, 0, 0)})
+local espNameUseTeamColor = espGroupbox:AddToggle("espNameUseTeamColor", {Text = "Use Team Color For Name"})
+local espNameType = espGroupbox:AddDropdown("espNameType", {Text = "Name Type", AllowNull = false, Multi = false, Values = {"Display Name", "Account Name"}, Default = "Display Name"})
+local espHighlightToggled = espGroupbox:AddToggle("espHighlightToggled", {Text = "Chams"})
+:AddColorPicker("espHighlightColor1", {Title = "Fill Color", Default = Color3.fromRGB(0,0,0)})
+:AddColorPicker("espHighlightColor2", {Title = "Outline Color", Default = Color3.fromRGB(0, 0, 0)})
+local espHighlightUseTeamColor = espGroupbox:AddToggle("espHighlightUseTeamColor", {Text = "Use Team Color For Chams"})
+local espHighlightDepthMode = espGroupbox:AddDropdown("espHighlightDepthMode", {Text = "Chams Depth Mode", AllowNull = false, Multi = false, Values = {"Occluded", "AlwaysOnTop"}, Default = "Occluded"})
+local espHighlightFillTransparency = espGroupbox:AddSlider("espHighlightFillTransparency", {Text = "Chams Fill Transparency", Min = 0, Max = 1, Default = 0.5, Rounding = 2})
+local espHighlightOutlineTransparency = espGroupbox:AddSlider("espHighlightOutlineTransparency", {Text = "Chams Outline Transparency", Min = 0, Max = 1, Default = 0, Rounding = 2})
+
 
 local playerNames = {}
 --local npcNames = {} -- I was planning on adding npc support
@@ -135,6 +151,8 @@ end)
 
 SaveManager:BuildConfigSection(mainTab)
 SaveManager:LoadAutoloadConfig()
+Library:Notify("hai :3")
+Library:Notify("Press right ctrl to open the menu")
 
 -- Returns a table of every possible bodypart in a character, or nil if the character does not exist.
 local function getBodyParts(character)
@@ -179,14 +197,17 @@ local function getBodyParts(character)
     return parts
 end
 
--- Main function that allows the character passed to be expanded at will
-local function extendCharacter(character)
+-- Main function
+local function addCharacter(character)
+    local nameEsp = Drawing.new("Text"); nameEsp.Center = true; nameEsp.Outline = true
+    local chams = Instance.new("Highlight", character)
+    chams.Enabled = false
+    --ProtectInstance(chams)
     local player = game.Players:GetPlayerFromCharacter(character)
     local timer = 0
     local originals = {}
-    local CharacterAdded = {}
     local bodyParts = getBodyParts(character)
-    --Sets up original sizes, creates collision constraints, and creates hooks to bypass localscript anticheats
+    -- Sets up original sizes and creates hooks to bypass localscript anticheats
     local function setup(i, v)
         if not originals[i] then
             originals[i] = {}
@@ -322,19 +343,61 @@ local function extendCharacter(character)
         end
         return 0
     end
-    -- here's the actual expander code
+    -- loop that handles everything
     local Heartbeat
     Heartbeat = game:GetService("RunService").Heartbeat:Connect(function(deltaTime)
         timer += deltaTime
+        local checks = getChecks()
+        if espNameToggled.Value then
+            if character:FindFirstChild("HumanoidRootPart") then
+                local pos, onScreen = workspace.CurrentCamera:WorldToViewportPoint(character.HumanoidRootPart.Position)
+                if onScreen and checks == 0 then
+                    if espNameType.Value == "Display Name" then
+                        nameEsp.Text = player.DisplayName
+                    else
+                        nameEsp.Text = player.Name
+                    end
+                    if espNameUseTeamColor.Value then
+                        nameEsp.Color = player.TeamColor.Color
+                    else
+                        nameEsp.Color = Options.espNameColor1.Value
+                    end
+                    nameEsp.OutlineColor = Options.espNameColor2.Value
+                    nameEsp.Position = Vector2.new(pos.X, pos.Y)
+                    nameEsp.Size = 1000 / pos.Z + 10
+                    nameEsp.Visible = true
+                else
+                    nameEsp.Visible = false
+                end
+            else
+                nameEsp.Visible = false
+            end
+        else
+            nameEsp.Visible = false
+        end
+        if espHighlightToggled.Value and checks == 0 then
+            if espHighlightUseTeamColor.Value then
+                chams.FillColor = player.TeamColor.Color
+                chams.OutlineColor = player.TeamColor.Color
+            else
+                chams.FillColor = Options.espHighlightColor1.Value
+                chams.OutlineColor = Options.espHighlightColor2.Value
+            end
+            chams.DepthMode = Enum.HighlightDepthMode[espHighlightDepthMode.Value]
+            chams.FillTransparency = espHighlightFillTransparency.Value
+            chams.OutlineTransparency = espHighlightOutlineTransparency.Value
+            chams.Enabled = true
+        else
+            chams.Enabled = false
+        end
         if timer >= (extenderUpdateRate.Value / 1000) then -- divided by 1000 because milliseconds
             timer = 0
             local bodyPartList = extenderPartList:GetActiveValues()
-            local checks = getChecks()
             if checks == 2 then
                 reset("all")
-                for _,v in pairs(CharacterAdded) do
-                    v:Disconnect()
-                end
+                nameEsp:Remove()
+                nameEsp = nil
+                chams:Destroy()
                 Heartbeat:Disconnect()
                 return
             elseif checks == 1 then
@@ -382,10 +445,11 @@ local function extendCharacter(character)
     local PlayerRemoving
     PlayerRemoving = game.Players.PlayerRemoving:Connect(function(v)
         if v == player then
-            Heartbeat:Disconnect()
-            for _,b in pairs(CharacterAdded) do
-                b:Disconnect()
+            if nameEsp then
+                nameEsp:Remove()
             end
+            chams:Destroy()
+            Heartbeat:Disconnect()
             PlayerRemoving:Disconnect()
         end
     end)
@@ -394,10 +458,10 @@ for _,player in ipairs(game.Players:GetPlayers()) do
     if player ~= lPlayer then
         task.spawn(function()
             player.CharacterAdded:Connect(function(v)
-                extendCharacter(v)
+                addCharacter(v)
             end)
             if player.Character then
-                extendCharacter(player.Character)
+                addCharacter(player.Character)
             end
         end)
     else
@@ -420,7 +484,7 @@ for _,player in ipairs(game.Players:GetPlayers()) do
 end
 game.Players.PlayerAdded:Connect(function(player)
     player.CharacterAdded:Connect(function(v)
-        extendCharacter(v)
+        addCharacter(v)
     end)
 end)
--- now, where are my schizo meds?
+-- I'm sorry for your eyes
