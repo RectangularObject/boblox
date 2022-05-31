@@ -14,6 +14,11 @@ local physService = game:GetService("PhysicsService")
 physService:CreateCollisionGroup("squarehookhackcheatexploit")
 physService:CollisionGroupSetCollidable("squarehookhackcheatexploit", "squarehookhackcheatexploit", false)
 
+if game.GameId == 1054526971 then
+    physService:CollisionGroupSetCollidable("squarehookhackcheatexploit", "CharacterGroup", false)
+    physService:CollisionGroupSetCollidable("squarehookhackcheatexploit", "RagdollGroup", false)
+end
+
 if game.PlaceId == 8203181639 then -- Syrian Shenanigans
     physService:CollisionGroupSetCollidable("squarehookhackcheatexploit", "Plugin_Unselectable_Group", false)
 end
@@ -241,33 +246,15 @@ local function addCharacter(character)
             end)
         end
     end
-    do
-        local customPart = character:FindFirstChild(customPartNameInput.Value)
-        if customPart and customPart:IsA("BasePart") then
-            if not originals[customPart.Name] then
-                setup(customPart.Name, customPart)
-            end
-        end
-        for i,v in pairs(bodyParts) do
-            if i ~= "Humanoid" and type(v) ~= "table" then
-                if not originals[i] then
-                    setup(i,v)
-                end
-            elseif type(v) == "table" then
-                for o,b in pairs(v) do
-                    if not originals[o] then
-                        setup(o,b)
-                    end
-                end
-            end
-        end
-    end
     -- resets the properties of the selected part.
     -- if "all" is passed, will reset every part
     local function reset(part)
         if part == "custompart" or part == "all" then
             local customPart = character:FindFirstChild(customPartNameInput.Value)
             if customPart and customPart:IsA("BasePart") then
+                if not originals[customPart.Name] then
+                    setup(customPart.Name, customPart)
+                end
                 customPart.Size = originals[customPart.Name].Size
                 customPart.Transparency = originals[customPart.Name].Transparency
                 customPart.Massless = originals[customPart.Name].Massless
@@ -277,12 +264,18 @@ local function addCharacter(character)
         for i,v in pairs(bodyParts) do
             if string.lower(part) == string.lower(i) or part == "all" then
                 if i ~= "Humanoid" and type(v) ~= "table" then
+                    if not originals[i] then
+                        setup(i,v)
+                    end
                     v.Size = originals[i].Size
                     v.Transparency = originals[i].Transparency
                     v.Massless = originals[i].Massless
                     physService:SetPartCollisionGroup(v, originals[i].CollisionGroup)
                 elseif type(v) == "table" then
                     for o,b in pairs(v) do
+                        if not originals[o] then
+                            setup(o,b)
+                        end
                         b.Size = originals[o].Size
                         b.Transparency = originals[o].Transparency
                         b.Massless = originals[o].Massless
@@ -344,14 +337,12 @@ local function addCharacter(character)
         return 0
     end
     -- loop that handles everything
-    local Heartbeat
-    Heartbeat = game:GetService("RunService").Heartbeat:Connect(function(deltaTime)
-        timer += deltaTime
-        local checks = getChecks()
+    local RenderStepped
+    RenderStepped = game:GetService("RunService").RenderStepped:Connect(function()
         if espNameToggled.Value then
             if character:FindFirstChild("HumanoidRootPart") then
                 local pos, onScreen = workspace.CurrentCamera:WorldToViewportPoint(character.HumanoidRootPart.Position)
-                if onScreen and checks == 0 then
+                if onScreen and getChecks() == 0 then
                     if espNameType.Value == "Display Name" then
                         nameEsp.Text = player.DisplayName
                     else
@@ -375,6 +366,72 @@ local function addCharacter(character)
         else
             nameEsp.Visible = false
         end
+    end)
+    local Heartbeat
+    Heartbeat = game:GetService("RunService").Heartbeat:Connect(function(deltaTime)
+        timer += deltaTime
+        local checks = getChecks()
+        if timer >= (extenderUpdateRate.Value / 1000) then -- divided by 1000 because milliseconds
+            timer = 0
+            local bodyPartList = extenderPartList:GetActiveValues()
+            if checks == 2 then
+                reset("all")
+                nameEsp:Remove()
+                nameEsp = nil
+                chams:Destroy()
+                RenderStepped:Disconnect()
+                Heartbeat:Disconnect()
+                return
+            elseif checks == 1 then
+                reset("all")
+                return
+            end
+            if extenderToggled.Value then
+                if table.find(bodyPartList, "Custom Part") then
+                    local customPart = character:FindFirstChild(customPartNameInput.Value)
+                    if customPart and customPart:IsA("BasePart") then
+                        if not originals[customPart.Name] then
+                            setup(customPart.Name, customPart)
+                        end
+                        customPart.Massless = true
+                        physService:SetPartCollisionGroup(customPart, "squarehookhackcheatexploit")
+                        customPart.Size = Vector3.new(extenderSize.Value, extenderSize.Value, extenderSize.Value)
+                        customPart.Transparency = extenderTransparency.Value
+                    end
+                else
+                    reset("custompart")
+                end
+                for i,v in pairs(bodyParts) do
+                    if table.find(bodyPartList, i) then
+                        if type(v) ~= "table" then
+                            if not originals[i] then
+                                setup(i,v)
+                            end
+                            if i ~= "HumanoidRootPart" then
+                                v.Massless = true
+                            end
+                            physService:SetPartCollisionGroup(v, "squarehookhackcheatexploit")
+                            v.Size = Vector3.new(extenderSize.Value, extenderSize.Value, extenderSize.Value)
+                            v.Transparency = extenderTransparency.Value
+                        else
+                            for o,b in pairs(v) do
+                                if not originals[o] then
+                                    setup(o,b)
+                                end
+                                b.Massless = true
+                                physService:SetPartCollisionGroup(b, "squarehookhackcheatexploit")
+                                b.Size = Vector3.new(extenderSize.Value, extenderSize.Value, extenderSize.Value)
+                                b.Transparency = extenderTransparency.Value
+                            end
+                        end
+                    else
+                        reset(i)
+                    end
+                end
+            else
+                reset("all")
+            end
+        end
         if espHighlightToggled.Value and checks == 0 then
             if espHighlightUseTeamColor.Value then
                 chams.FillColor = player.TeamColor.Color
@@ -390,67 +447,18 @@ local function addCharacter(character)
         else
             chams.Enabled = false
         end
-        if timer >= (extenderUpdateRate.Value / 1000) then -- divided by 1000 because milliseconds
-            timer = 0
-            local bodyPartList = extenderPartList:GetActiveValues()
-            if checks == 2 then
-                reset("all")
-                nameEsp:Remove()
-                nameEsp = nil
-                chams:Destroy()
-                Heartbeat:Disconnect()
-                return
-            elseif checks == 1 then
-                reset("all")
-                return
-            end
-            if extenderToggled.Value then
-                if table.find(bodyPartList, "Custom Part") then
-                    local customPart = character:FindFirstChild(customPartNameInput.Value)
-                    if customPart then
-                        customPart.Massless = true
-                        physService:SetPartCollisionGroup(customPart, "squarehookhackcheatexploit")
-                        customPart.Size = Vector3.new(extenderSize.Value, extenderSize.Value, extenderSize.Value)
-                        customPart.Transparency = extenderTransparency.Value
-                    end
-                else
-                    reset("custompart")
-                end
-                for i,v in pairs(bodyParts) do
-                    if table.find(bodyPartList, i) then
-                        if type(v) ~= "table" then
-                            if i ~= "HumanoidRootPart" then
-                                v.Massless = true
-                            end
-                            physService:SetPartCollisionGroup(v, "squarehookhackcheatexploit")
-                            v.Size = Vector3.new(extenderSize.Value, extenderSize.Value, extenderSize.Value)
-                            v.Transparency = extenderTransparency.Value
-                        else
-                            for o,b in pairs(v) do
-                                b.Massless = true
-                                physService:SetPartCollisionGroup(b, "squarehookhackcheatexploit")
-                                b.Size = Vector3.new(extenderSize.Value, extenderSize.Value, extenderSize.Value)
-                                b.Transparency = extenderTransparency.Value
-                            end
-                        end
-                    else
-                        reset(i)
-                    end
-                end
-            else
-                reset("all")
-            end
-        end
     end)
-    local PlayerRemoving
-    PlayerRemoving = game.Players.PlayerRemoving:Connect(function(v)
-        if v == player then
+    local ChildRemoved
+    ChildRemoved = character.Parent.ChildRemoved:Connect(function(v)
+        if v == character then
+            reset("all")
             if nameEsp then
                 nameEsp:Remove()
             end
             chams:Destroy()
+            RenderStepped:Disconnect()
             Heartbeat:Disconnect()
-            PlayerRemoving:Disconnect()
+            ChildRemoved:Disconnect()
         end
     end)
 end
