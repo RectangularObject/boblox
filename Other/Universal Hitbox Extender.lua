@@ -226,10 +226,6 @@ end
 
 -- Main function
 local function addCharacter(character)
-    local nameEsp = Drawing.new("Text"); nameEsp.Center = true; nameEsp.Outline = true
-    local chams = Instance.new("Highlight", character)
-    chams.Enabled = false
-    --ProtectInstance(chams)
     local player = game.Players:GetPlayerFromCharacter(character)
     local timer = 0
     local originals = {}
@@ -318,12 +314,12 @@ local function addCharacter(character)
         if game.PlaceId == 633284182 then
             local success, result = pcall(function()
                 if character.Torso.NeckBallSocket.Enabled then
-                    return 2
+                    return true
                 end
             end)
             if success then
                 if result then
-                    return 2
+                    return 1
                 end
             end
         end
@@ -384,7 +380,8 @@ local function addCharacter(character)
         end
         return 0
     end
-    -- loop that handles everything
+    -- loops and stuff
+    local nameEsp = Drawing.new("Text"); nameEsp.Center = true; nameEsp.Outline = true
     local RenderStepped
     RenderStepped = game:GetService("RunService").RenderStepped:Connect(function()
         if espNameToggled.Value then
@@ -415,6 +412,9 @@ local function addCharacter(character)
             nameEsp.Visible = false
         end
     end)
+    local chams = Instance.new("Highlight", character)
+    chams.Enabled = false
+    --ProtectInstance(chams)
     local Heartbeat
     Heartbeat = game:GetService("RunService").Heartbeat:Connect(function(deltaTime)
         timer += deltaTime
@@ -481,7 +481,6 @@ local function addCharacter(character)
             end
         end
         if espHighlightToggled.Value and checks == 0 then
-            chams.Parent = character
             if espHighlightUseTeamColor.Value then
                 chams.FillColor = player.TeamColor.Color
                 chams.OutlineColor = player.TeamColor.Color
