@@ -316,11 +316,16 @@ local function addCharacter(character)
             return 2
         end
         if game.PlaceId == 633284182 then
-            return pcall(function()
+            local success, result = pcall(function()
                 if character.Torso.NeckBallSocket.Enabled then
                     return 2
                 end
             end)
+            if success then
+                if result then
+                    return 2
+                end
+            end
         end
         if extenderSitCheck.Value then
             if bodyParts.Humanoid.Sit then
