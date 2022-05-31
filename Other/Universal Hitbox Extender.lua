@@ -7,8 +7,8 @@ if not getgenv().MTAPIMutex then loadstring(game:HttpGet("https://raw.githubuser
 loadstring(game:HttpGet("https://raw.githubusercontent.com/LegoHacker1337/legohacks/main/PhysicsServiceOnClient.lua"))()
 -- thanks Iris (https://v3rmillion.net/showthread.php?pid=8154179)
 --loadstring(game:HttpGet("https://api.irisapp.ca/Scripts/IrisInstanceProtect.lua"))()
-
-local lPlayer = game.Players.LocalPlayer
+local Plrs = game:GetService'Players'
+local lPlayer = Plrs.LocalPlayer
 local physService = game:GetService("PhysicsService")
 local collisiongroups = physService:GetCollisionGroups()
 local collisionsready = false
@@ -111,7 +111,7 @@ end
 task.spawn(function()
     while true do task.wait() -- if you cry about while true do loops then kys
         local temp = {}
-        for i,v in ipairs(game.Players:GetPlayers()) do
+        for i,v in ipairs(Plrs:GetPlayers()) do
             if v ~= lPlayer then
                 temp[i] = v.Name
             end
@@ -213,7 +213,7 @@ local function addCharacter(character)
     local timer = 0
     local originals = {}
     local bodyParts = getBodyParts(character)
-    local player = game.Players:GetPlayerFromCharacter(character)
+    local player = Plrs:GetPlayerFromCharacter(character)
     if bodyParts == nil or player == nil then return end
     -- Sets up original sizes and creates hooks to bypass localscript anticheats
     local function setup(i, v)
@@ -490,7 +490,7 @@ local function addCharacter(character)
         end
     end)
     local PlayerRemoving
-    PlayerRemoving = game.Players.PlayerRemoving:Connect(function(v)
+    PlayerRemoving = Plrs.PlayerRemoving:Connect(function(v)
         if v == player then
             reset("all")
             if nameEsp then
@@ -503,7 +503,7 @@ local function addCharacter(character)
         end
     end)
 end
-for _,player in ipairs(game.Players:GetPlayers()) do
+for _,player in ipairs(Plrs:GetPlayers()) do
     if player ~= lPlayer then
         task.spawn(function()
             player.CharacterAdded:Connect(function(v)
@@ -532,7 +532,7 @@ for _,player in ipairs(game.Players:GetPlayers()) do
         end
     end
 end
-game.Players.PlayerAdded:Connect(function(player)
+Plrs.PlayerAdded:Connect(function(player)
     player.CharacterAdded:Connect(function(v)
         addCharacter(v)
     end)
