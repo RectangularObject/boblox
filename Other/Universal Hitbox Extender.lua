@@ -10,46 +10,32 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/LegoHacker1337/legoha
 
 local lPlayer = game.Players.LocalPlayer
 local physService = game:GetService("PhysicsService")
+local collisiongroups = physService:GetCollisionGroups()
+local collisionsready = false
 
 physService:CreateCollisionGroup("squarehookhackcheatexploit")
-physService:CollisionGroupSetCollidable("squarehookhackcheatexploit", "squarehookhackcheatexploit", false)
+local function disableCollisions(group)
+    physService:CollisionGroupSetCollidable("squarehookhackcheatexploit", group, false)
+end
+disableCollisions("squarehookhackcheatexploit")
 
-if game.PlaceId == 633284182 then -- Fireteam
-    -- aids
-    task.spawn(function()
-        while true do task.wait(1)
-            physService:CollisionGroupSetCollidable("squarehookhackcheatexploit", "SoundBoxes", false)
-            physService:CollisionGroupSetCollidable("squarehookhackcheatexploit", "Freebody", false)
-            physService:CollisionGroupSetCollidable("squarehookhackcheatexploit", "Interactable", false)
-            physService:CollisionGroupSetCollidable("squarehookhackcheatexploit", "CaptureRegion", false)
-            physService:CollisionGroupSetCollidable("squarehookhackcheatexploit", "MedicalInteract", false)
-            physService:CollisionGroupSetCollidable("squarehookhackcheatexploit", "Noninteract", false)
-            physService:CollisionGroupSetCollidable("squarehookhackcheatexploit", "WeaponIgnoreList", false)
-            physService:CollisionGroupSetCollidable("squarehookhackcheatexploit", "Players", false)
+task.spawn(function()
+    local character = lPlayer.Character or lPlayer.CharacterAdded:Wait()
+    local head = character:WaitForChild("Head")
+    local collisiongroup = physService:GetCollisionGroupName(head.CollisionGroupId)
+    for _,v in pairs(collisiongroups) do
+        if v.name == collisiongroup then
+            for _,b in pairs(collisiongroups) do
+                local result = physService:CollisionGroupsAreCollidable(v.name, b.name)
+                if not result then
+                    disableCollisions(b.name)
+                    --print("Disabled collisions for:", b.name)
+                end
+            end
         end
-    end)
-end
-
-if game.GameId == 1054526971 then -- brm5
-    physService:CollisionGroupSetCollidable("squarehookhackcheatexploit", "CharacterGroup", false)
-    physService:CollisionGroupSetCollidable("squarehookhackcheatexploit", "RagdollGroup", false)
-end
-
-if game.PlaceId == 8203181639 then -- Syrian Shenanigans
-    physService:CollisionGroupSetCollidable("squarehookhackcheatexploit", "Plugin_Unselectable_Group", false)
-end
-
-if game.PlaceId == 2158109152 then -- Weapon Kit
-    physService:CollisionGroupSetCollidable("squarehookhackcheatexploit", "NONE", false)
-end
-
-if game.PlaceId == 4716045691 then -- Polybattle
-    physService:CollisionGroupSetCollidable("squarehookhackcheatexploit", "viewModel", false)
-end
-
-if game.PlaceId == 2732246600 then -- Bloody Battle
-    physService:CollisionGroupSetCollidable("squarehookhackcheatexploit", "root", false)
-end
+    end
+    collisionsready = true
+end)
 
 if game.PlaceId == 111311599 then -- Critical Strike
     local anticheat = game:GetService("ReplicatedFirst")["Serverbased AntiCheat"] -- then why put it in a localscript?
@@ -99,7 +85,6 @@ local espHighlightUseTeamColor = espGroupbox:AddToggle("espHighlightUseTeamColor
 local espHighlightDepthMode = espGroupbox:AddDropdown("espHighlightDepthMode", {Text = "Chams Depth Mode", AllowNull = false, Multi = false, Values = {"Occluded", "AlwaysOnTop"}, Default = "Occluded"})
 local espHighlightFillTransparency = espGroupbox:AddSlider("espHighlightFillTransparency", {Text = "Chams Fill Transparency", Min = 0, Max = 1, Default = 0.5, Rounding = 2})
 local espHighlightOutlineTransparency = espGroupbox:AddSlider("espHighlightOutlineTransparency", {Text = "Chams Outline Transparency", Min = 0, Max = 1, Default = 0, Rounding = 2})
-
 
 local playerNames = {}
 --local npcNames = {} -- I was planning on adding npc support
@@ -184,7 +169,7 @@ end
 local function getBodyParts(character)
     local parts = {
         Head = character:WaitForChild("Head"),
-        HumanoidRootPart = character:WaitForChild("HumanoidRootPart"),
+        HumanoidRootPart = character:FindFirstChild("HumanoidRootPart"),
         Humanoid = WaitForChildWhichIsA(character, "Humanoid"),
         Torso = {},
         ["Left Arm"] = {},
@@ -223,14 +208,13 @@ local function getBodyParts(character)
     end
     return parts
 end
-
 -- Main function
 local function addCharacter(character)
-    local player = game.Players:GetPlayerFromCharacter(character)
     local timer = 0
     local originals = {}
     local bodyParts = getBodyParts(character)
-    if bodyParts == nil then nameEsp:Remove(); chams:Destroy() return end
+    local player = game.Players:GetPlayerFromCharacter(character)
+    if bodyParts == nil or player == nil then return end
     -- Sets up original sizes and creates hooks to bypass localscript anticheats
     local function setup(i, v)
         if not originals[i] then
@@ -305,10 +289,10 @@ local function addCharacter(character)
         end
     end
     local function getChecks()
-        if game.Players:GetPlayerFromCharacter(character) ~= player then
+        if bodyParts.Humanoid:GetState() == Enum.HumanoidStateType.Dead or bodyParts.Humanoid.Health <= 0 then
             return 2
         end
-        if bodyParts.Humanoid:GetState() == Enum.HumanoidStateType.Dead or bodyParts.Humanoid.Health <= 0 then
+        if player.Character ~= character or player.Character == nil then
             return 2
         end
         if game.PlaceId == 633284182 then
@@ -385,8 +369,12 @@ local function addCharacter(character)
     local RenderStepped
     RenderStepped = game:GetService("RunService").RenderStepped:Connect(function()
         if espNameToggled.Value then
-            if character:FindFirstChild("HumanoidRootPart") then
-                local pos, onScreen = workspace.CurrentCamera:WorldToViewportPoint(character.HumanoidRootPart.Position)
+            local espPart = character:FindFirstChild("HumanoidRootPart")
+            if not espPart then
+                espPart = bodyParts.Torso[1]
+            end
+            if espPart then
+                local pos, onScreen = workspace.CurrentCamera:WorldToViewportPoint(espPart.Position)
                 if onScreen and getChecks() == 0 then
                     if espNameType.Value == "Display Name" then
                         nameEsp.Text = player.DisplayName
@@ -496,9 +484,9 @@ local function addCharacter(character)
             chams.Enabled = false
         end
     end)
-    local ChildRemoved
-    ChildRemoved = character.Parent.ChildRemoved:Connect(function(v)
-        if v == character then
+    local PlayerRemoving
+    PlayerRemoving = game.Players.PlayerRemoving:Connect(function(v)
+        if v == player then
             reset("all")
             if nameEsp then
                 nameEsp:Remove()
@@ -506,7 +494,7 @@ local function addCharacter(character)
             chams:Destroy()
             RenderStepped:Disconnect()
             Heartbeat:Disconnect()
-            ChildRemoved:Disconnect()
+            PlayerRemoving:Disconnect()
         end
     end)
 end
@@ -523,6 +511,7 @@ for _,player in ipairs(game.Players:GetPlayers()) do
     else
         local function onDescendantAdded(descendant)
             if descendant:IsA("BasePart") then
+                while not collisionsready do task.wait() end
                 physService:SetPartCollisionGroup(descendant, "squarehookhackcheatexploit")
             end
         end
