@@ -29,7 +29,7 @@ task.spawn(function()
                 local result = physService:CollisionGroupsAreCollidable(v.name, b.name)
                 if not result then
                     disableCollisions(b.name)
-                    --print("Disabled collisions for:", b.name)
+                    print("Disabled collisions for:", b.name)
                 end
             end
         end
@@ -294,6 +294,11 @@ local function addCharacter(character)
         end
         if player.Character ~= character or player.Character == nil then
             return 2
+        end
+        if game.PlaceId == 6172932937 then
+            if player.ragdolled.Value then
+                return 1
+            end
         end
         if game.PlaceId == 633284182 then
             local success, result = pcall(function()
