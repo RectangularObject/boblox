@@ -417,6 +417,21 @@ local function addCharacter(character)
 		local checks = getChecks()
 		if timer >= (extenderUpdateRate.Value / 1000) then -- divided by 1000 because milliseconds
 			timer = 0
+            if espHighlightToggled.Value and checks == 0 then
+                if espHighlightUseTeamColor.Value then
+                    chams.FillColor = player.TeamColor.Color
+                    chams.OutlineColor = player.TeamColor.Color
+                else
+                    chams.FillColor = Options.espHighlightColor1.Value
+                    chams.OutlineColor = Options.espHighlightColor2.Value
+                end
+                chams.DepthMode = Enum.HighlightDepthMode[espHighlightDepthMode.Value]
+                chams.FillTransparency = espHighlightFillTransparency.Value
+                chams.OutlineTransparency = espHighlightOutlineTransparency.Value
+                chams.Enabled = true
+            else
+                chams.Enabled = false
+            end
 			local bodyPartList = extenderPartList:GetActiveValues()
 			if checks == 2 then
 				reset("all")
@@ -475,21 +490,6 @@ local function addCharacter(character)
 			else
 				reset("all")
 			end
-		end
-		if espHighlightToggled.Value and checks == 0 then
-			if espHighlightUseTeamColor.Value then
-				chams.FillColor = player.TeamColor.Color
-				chams.OutlineColor = player.TeamColor.Color
-			else
-				chams.FillColor = Options.espHighlightColor1.Value
-				chams.OutlineColor = Options.espHighlightColor2.Value
-			end
-			chams.DepthMode = Enum.HighlightDepthMode[espHighlightDepthMode.Value]
-			chams.FillTransparency = espHighlightFillTransparency.Value
-			chams.OutlineTransparency = espHighlightOutlineTransparency.Value
-			chams.Enabled = true
-		else
-			chams.Enabled = false
 		end
 	end)
 	local PlayerRemoving
