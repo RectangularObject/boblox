@@ -2,6 +2,11 @@ if not game:IsLoaded() then
 	game.Loaded:Wait()
 end
 
+if not syn then
+	-- thanks Iris (https://v3rmillion.net/showthread.php?tid=1119132)
+	loadstring(game:HttpGet("https://api.irisapp.ca/Scripts/IrisBetterCompat.lua"))()
+end
+
 -- thanks 3ds and kiko metatables r hard (https://v3rmillion.net/showthread.php?tid=1089069)
 -- my version uses hookmetamethod :D
 if not getgenv().MTAPIMutex then
@@ -15,32 +20,10 @@ local Plrs = game:GetService("Players")
 local lPlayer = Plrs.LocalPlayer or Plrs.PlayerAdded:Wait()
 local physService = game:GetService("PhysicsService")
 local RunService = game:GetService("RunService")
-local collisiongroups = physService:GetCollisionGroups()
-local collisionsready = false
-
 physService:CreateCollisionGroup("squarehookhackcheatexploit")
 local function disableCollisions(group)
 	physService:CollisionGroupSetCollidable("squarehookhackcheatexploit", group, false)
 end
-disableCollisions("squarehookhackcheatexploit")
-
-task.spawn(function()
-	local character = lPlayer.Character or lPlayer.CharacterAdded:Wait()
-	local head = character:WaitForChild("Head")
-	local collisiongroup = physService:GetCollisionGroupName(head.CollisionGroupId)
-	for _, v in pairs(collisiongroups) do
-		if v.name == collisiongroup then
-			for _, b in pairs(collisiongroups) do
-				local result = physService:CollisionGroupsAreCollidable(v.name, b.name)
-				if not result then
-					disableCollisions(b.name)
-					--print("Disabled collisions for", b.name)
-				end
-			end
-		end
-	end
-	collisionsready = true
-end)
 
 if game.PlaceId == 111311599 then -- Critical Strike
 	local anticheat = game:GetService("ReplicatedFirst")["Serverbased AntiCheat"] -- then why put it in a localscript?
@@ -538,10 +521,7 @@ for _, player in ipairs(Plrs:GetPlayers()) do
 	else
 		local function onDescendantAdded(descendant)
 			if descendant:IsA("BasePart") then
-				while not collisionsready do
-					task.wait()
-				end
-				physService:SetPartCollisionGroup(descendant, "squarehookhackcheatexploit")
+				disableCollisions(physService:GetCollisionGroupName(descendant.CollisionGroupId))
 			end
 		end
 		local function onCharacterAdded(character)
