@@ -86,7 +86,7 @@ local ignoreTeamList = ignoresGroupbox:AddDropdown("ignoreTeamList", { Text = "T
 task.spawn(function()
 	while task.wait() do
 		local temp = {}
-		for _,v in Plrs:GetPlayers() do
+		for _,v in ipairs(Plrs:GetPlayers()) do
 			if v ~= lPlayer then
 				table.insert(temp, v.Name)
 			end
