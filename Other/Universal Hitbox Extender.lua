@@ -84,7 +84,7 @@ local ignoreSelectedTeamsToggled = ignoresGroupbox:AddToggle("ignoreSelectedTeam
 local ignoreTeamList = ignoresGroupbox:AddDropdown("ignoreTeamList", { Text = "Teams", AllowNull = true, Multi = true, Values = teamNames })
 
 task.spawn(function()
-	while task.wait() do
+	while true do
 		local temp = {}
 		for _,v in ipairs(Plrs:GetPlayers()) do
 			if v ~= lPlayer then
@@ -107,6 +107,7 @@ task.spawn(function()
 			ignoreTeamList:SetValues()
 			ignoreTeamList:Display()
 		end
+		task.wait()
 	end
 end)
 
