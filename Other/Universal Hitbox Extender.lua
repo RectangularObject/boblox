@@ -90,32 +90,32 @@ local function updateList(list, nameList)
 end
 
 Plrs.PlayerAdded:Connect(function(player)
-	print(player.Name, "joined")
+	--print(player.Name, "joined")
 	table.insert(playerNames, player.Name)
 	updateList(ignorePlayerList, playerNames)
 end)
 Plrs.PlayerRemoving:Connect(function(player)
-	print(player.Name, "left")
+	--print(player.Name, "left")
 	table.remove(playerNames, table.find(playerNames, player.Name))
 	updateList(ignorePlayerList, playerNames)
 end)
 Teams.ChildAdded:Connect(function(team)
-	print(team.Name, "created")
+	--print(team.Name, "created")
 	table.insert(teamNames, team.Name)
 	updateList(ignoreTeamList, teamNames)
 end)
 Teams.ChildRemoved:Connect(function(team)
-	print(team.Name, "deleted")
+	--print(team.Name, "deleted")
 	table.remove(teamNames, table.find(teamNames, team.Name))
 	updateList(ignoreTeamList, teamNames)
 end)
 for _,player in ipairs(Plrs:GetPlayers()) do
 	if player == lPlayer then continue end
-	print("found", player.Name)
+	--print("found", player.Name)
 	table.insert(playerNames, player.Name)
 end
 for _,team in pairs(Teams:GetTeams()) do
-	print("found", team.Name)
+	--print("found", team.Name)
 	table.insert(teamNames, team.Name)
 end
 updateList(ignorePlayerList, playerNames)
