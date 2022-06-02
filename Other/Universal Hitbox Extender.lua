@@ -136,7 +136,7 @@ end
 -- Returns a table of every possible bodypart in a character, or nil if the character does not exist.
 local function getBodyParts(character)
 	local parts = {
-		Head = character:WaitForChild("Head"),
+		Head = character:WaitForChild("Head", 1),
 		HumanoidRootPart = character:WaitForChild("HumanoidRootPart", 1),
 		Humanoid = WaitForChildWhichIsA(character, "Humanoid"),
 		Torso = {},
@@ -178,6 +178,48 @@ local function getBodyParts(character)
 		end
 	end
 	return parts
+end
+local function getTeam(player, character)
+	if game.GameId == 718936923 then -- Neighborhood War
+		local selfTeam
+		local playerTeam
+		pcall(function()
+			selfTeam = lPlayer.Character.HumanoidRootPart.Color
+			playerTeam = character.HumanoidRootPart.Color
+		end)
+		if selfTeam == playerTeam then
+			return true
+		end
+	elseif game.PlaceId == 2158109152 then -- Weapon Kit
+		local friendly = character:FindFirstChild("Friendly", true)
+		if friendly then
+			return true
+		end
+	elseif game.PlaceId == 633284182 then -- Fireteam
+		local selfTeam
+		local playerTeam
+		pcall(function()
+			selfTeam = lPlayer.PlayerData.TeamValue.Value
+			playerTeam = player.PlayerData.TeamValue.Value
+		end)
+		if selfTeam == playerTeam then
+			return true
+		end
+	elseif game.PlaceId == 2029250188 then -- Q-Clash
+		local selfTeam
+		local playerTeam
+		pcall(function()
+			selfTeam = lPlayer.Character.Parent
+			playerTeam = character.Parent
+		end)
+		if selfTeam == playerTeam then
+			return true
+		end
+	elseif lPlayer.Team == player.Team then
+		return true
+	else
+		return false
+	end
 end
 -- Main function
 local function addCharacter(player, character)
@@ -310,46 +352,8 @@ local function addCharacter(player, character)
 			end
 		end
 		if ignoreSelfTeamToggled.Value then
-			if game.PlaceId == 2039118386 then -- Neighborhood War
-				local selfTeam
-				local playerTeam
-				pcall(function()
-					selfTeam = lPlayer.Character.HumanoidRootPart.BrickColor
-					playerTeam = bodyParts.HumanoidRootPart.BrickColor
-				end)
-				if selfTeam == playerTeam then
-					return 1
-				end
-			end
-			if game.PlaceId == 2158109152 then -- Weapon Kit
-				local friendly = character:FindFirstChild("Friendly", true)
-				if friendly then
-					return 1
-				end
-			end
-			if game.PlaceId == 633284182 then -- Fireteam
-				local selfTeam
-				local playerTeam
-				pcall(function()
-					selfTeam = lPlayer.PlayerData.TeamValue.Value
-					playerTeam = player.PlayerData.TeamValue.Value
-				end)
-				if selfTeam == playerTeam then
-					return 1
-				end
-			end
-			if game.PlaceId == 2029250188 then -- Q-Clash
-				local selfTeam
-				local playerTeam
-				pcall(function()
-					selfTeam = lPlayer.Character.Parent
-					playerTeam = character.Parent
-				end)
-				if selfTeam == playerTeam then
-					return 1
-				end
-			end
-			if lPlayer.Team == player.Team then
+			local teammate = getTeam(player, character)
+			if teammate then
 				return 1
 			end
 		end
