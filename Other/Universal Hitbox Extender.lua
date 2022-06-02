@@ -98,7 +98,7 @@ task.spawn(function()
 			ignorePlayerList:Display()
 		end
 		temp = {}
-		for _,v in Teams:GetTeams() do
+		for _,v in pairs(Teams:GetTeams()) do
 			table.insert(temp, v.Name)
 		end
 		if #temp ~= #teamNames then
