@@ -124,11 +124,11 @@ Library:Notify("hai :3")
 Library:Notify("Press right ctrl to open the menu")
 
 local function WaitForChildWhichIsA(parent, name)
-	while not parent:FindFirstChildWhichIsA(name) do
-		task.wait()
+	while parent:FindFirstChildWhichIsA(name) == nil do
 		if parent == nil then
 			return nil
 		end
+		task.wait()
 	end
 	return parent:FindFirstChildWhichIsA(name)
 end
