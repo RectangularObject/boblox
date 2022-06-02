@@ -476,7 +476,7 @@ for _, player in ipairs(Plrs:GetPlayers()) do
 		end
 	else
 		local function onDescendantAdded(descendant)
-			if string.find(descendant.Name, "Torso") then
+			if string.find(descendant.Name, "Torso") and descendant:IsA("BasePart") then
 				disableCollisions(physService:GetCollisionGroupName(descendant.CollisionGroupId))
 			end
 		end
