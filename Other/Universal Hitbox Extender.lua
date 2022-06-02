@@ -129,8 +129,8 @@ end
 -- Returns a table of every possible bodypart in a character, or nil if the character does not exist.
 local function getBodyParts(character)
 	local parts = {
-		Head = character:WaitForChild("Head"),
-		HumanoidRootPart = character:FindFirstChild("HumanoidRootPart"),
+		Head = character:FindFirstChild("Head"),
+		HumanoidRootPart = character:WaitForChild("HumanoidRootPart"),
 		Humanoid = WaitForChildWhichIsA(character, "Humanoid"),
 		Torso = {},
 		["Left Arm"] = {},
@@ -172,12 +172,13 @@ local function getBodyParts(character)
 	return parts
 end
 -- Main function
-local function addCharacter(character)
+local function addCharacter(player, character)
+	--print(character.Name, "added")
 	local timer = 0
 	local originals = {}
 	local bodyParts = getBodyParts(character)
-	local player = Plrs:GetPlayerFromCharacter(character)
 	if bodyParts == nil or player == nil then
+		--print(character.Name, "is broken:\nbodyParts = ", bodyParts, "\nplayer = ", player)
 		return
 	end
 	-- Sets up original sizes and creates hooks to bypass localscript anticheats
@@ -255,9 +256,11 @@ local function addCharacter(character)
 	end
 	local function getChecks()
 		if bodyParts.Humanoid:GetState() == Enum.HumanoidStateType.Dead or bodyParts.Humanoid.Health <= 0 then
+			----print(character.Name, "died")
 			return 2
 		end
 		if player.Character ~= character or player.Character == nil then
+			----print(character.Name, "stopped existing")
 			return 2
 		end
 		if game.PlaceId == 6172932937 then -- Energy Assault
@@ -397,6 +400,7 @@ local function addCharacter(character)
 			end
 			local bodyPartList = extenderPartList:GetActiveValues()
 			if checks == 2 then
+				--print(character, "failed check 2")
 				reset("all")
 				nameEsp:Remove()
 				nameEsp = nil
@@ -457,6 +461,7 @@ local function addCharacter(character)
 	local PlayerRemoving
 	PlayerRemoving = Plrs.PlayerRemoving:Connect(function(v)
 		if v == player then
+			----print(player, "leaving")
 			reset("all")
 			if nameEsp then
 				nameEsp:Remove()
@@ -469,10 +474,12 @@ local function addCharacter(character)
 end
 for _, player in ipairs(Plrs:GetPlayers()) do
 	if player ~= lPlayer then
-		player.CharacterAdded:Connect(addCharacter)
+		player.CharacterAdded:Connect(function(character)
+			addCharacter(player, character)
+		end)
 		local Char = player.Character
 		if Char then
-			addCharacter(Char)
+			addCharacter(player, Char)
 		end
 	else
 		local function onDescendantAdded(descendant)
@@ -494,6 +501,8 @@ for _, player in ipairs(Plrs:GetPlayers()) do
 	end
 end
 Plrs.PlayerAdded:Connect(function(player)
-	player.CharacterAdded:Connect(addCharacter)
+	player.CharacterAdded:Connect(function(Char)
+		addCharacter(player, Char)
+	end)
 end)
 -- I'm sorry for your eyes
