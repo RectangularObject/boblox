@@ -55,6 +55,7 @@ local mainGroupbox = mainTab:AddLeftGroupbox("Hitbox Extender")
 local ignoresGroupbox = mainTab:AddRightGroupbox("Ignores")
 local espGroupbox = mainTab:AddLeftGroupbox("ESP")
 local miscGroupbox = mainTab:AddLeftGroupbox("Misc")
+local collisionsGroupbox = mainTab:AddRightGroupbox("Collisions")
 
 local extenderToggled = mainGroupbox:AddToggle("extenderToggled", { Text = "Toggle" })
 local extenderSize = mainGroupbox:AddSlider("extenderSize", { Text = "Size", Min = 2, Max = 100, Default = 10, Rounding = 1 })
@@ -79,6 +80,8 @@ local ignorePlayerList = ignoresGroupbox:AddDropdown("ignorePlayerList", { Text 
 local ignoreSelfTeamToggled = ignoresGroupbox:AddToggle("ignoreSelfTeamToggled", { Text = "Ignore Own Team" })
 local ignoreSelectedTeamsToggled = ignoresGroupbox:AddToggle("ignoreSelectedTeamsToggled", { Text = "Ignore Selected Teams" })
 local ignoreTeamList = ignoresGroupbox:AddDropdown("ignoreTeamList", { Text = "Teams", AllowNull = true, Multi = true, Values = {} })
+
+local collisionsToggled = collisionsGroupbox:AddToggle("collisionsToggled", {Text = "Enable Collisions"})
 
 local function updateList(list)
 	list:SetValues()
@@ -448,7 +451,11 @@ local function addCharacter(player, character)
 							setup(customPart.Name, customPart)
 						end
 						customPart.Massless = true
-						physService:SetPartCollisionGroup(customPart, "squarehookhackcheatexploit")
+						if collisionsToggled.Value then
+							physService:SetPartCollisionGroup(customPart, originals[customPart.Name].CollisionGroup)
+						else
+							physService:SetPartCollisionGroup(customPart, "squarehookhackcheatexploit")
+						end
 						customPart.Size = Vector3.new(extenderSize.Value, extenderSize.Value, extenderSize.Value)
 						customPart.Transparency = extenderTransparency.Value
 					end
@@ -464,7 +471,11 @@ local function addCharacter(player, character)
 							if i ~= "HumanoidRootPart" then
 								v.Massless = true
 							end
-							physService:SetPartCollisionGroup(v, "squarehookhackcheatexploit")
+							if collisionsToggled.Value then
+								physService:SetPartCollisionGroup(v, originals[i].CollisionGroup)
+							else
+								physService:SetPartCollisionGroup(v, "squarehookhackcheatexploit")
+							end
 							v.Size = Vector3.new(extenderSize.Value, extenderSize.Value, extenderSize.Value)
 							v.Transparency = extenderTransparency.Value
 						else
@@ -473,7 +484,11 @@ local function addCharacter(player, character)
 									setup(o, b)
 								end
 								b.Massless = true
-								physService:SetPartCollisionGroup(b, "squarehookhackcheatexploit")
+								if collisionsToggled.Value then
+									physService:SetPartCollisionGroup(b, originals[o].CollisionGroup)
+								else
+									physService:SetPartCollisionGroup(b, "squarehookhackcheatexploit")
+								end
 								b.Size = Vector3.new(extenderSize.Value, extenderSize.Value, extenderSize.Value)
 								b.Transparency = extenderTransparency.Value
 							end
