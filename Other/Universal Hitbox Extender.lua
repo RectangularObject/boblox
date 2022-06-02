@@ -340,7 +340,8 @@ local function addCharacter(character)
 	nameEsp.Outline = true
 	local chams = Instance.new("Highlight")
 	chams.Enabled = false
-	chams.Parent = character
+	chams.Parent = game:GetService("CoreGui")
+	chams.Adornee = character
 	--ProtectInstance(chams)
 	local RenderStepped
 	RenderStepped = RunService.RenderStepped:Connect(function(deltaTime)
