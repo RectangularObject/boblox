@@ -129,7 +129,7 @@ end
 -- Returns a table of every possible bodypart in a character, or nil if the character does not exist.
 local function getBodyParts(character)
 	local parts = {
-		Head = character:FindFirstChild("Head"),
+		Head = character:WaitForChild("Head"),
 		HumanoidRootPart = character:FindFirstChild("HumanoidRootPart"),
 		Humanoid = WaitForChildWhichIsA(character, "Humanoid"),
 		Torso = {},
@@ -139,6 +139,7 @@ local function getBodyParts(character)
 		["Right Leg"] = {},
 	}
 	if parts.Humanoid == nil then
+		--print(character.Name, "humanoid error")
 		return nil
 	end
 	for _, v in pairs(character:GetChildren()) do
@@ -258,11 +259,12 @@ local function addCharacter(player, character)
 		end
 	end
 	local function getChecks()
+		-- dead checks
 		if bodyParts.Humanoid:GetState() == Enum.HumanoidStateType.Dead or bodyParts.Humanoid.Health <= 0 then
 			--print(character.Name, "died")
 			return 2
 		end
-		if player.Character ~= character or player.Character == nil then
+		if player.Character ~= character then
 			--print(character.Name, "stopped existing")
 			return 2
 		end
@@ -283,6 +285,7 @@ local function addCharacter(player, character)
 				end
 			end
 		end
+		-- other checks
 		if extenderSitCheck.Value then
 			if bodyParts.Humanoid.Sit then
 				return 1
@@ -316,6 +319,16 @@ local function addCharacter(player, character)
 				pcall(function()
 					selfTeam = lPlayer.PlayerData.TeamValue.Value
 					playerTeam = player.PlayerData.TeamValue.Value
+				end)
+				if selfTeam == playerTeam then
+					return 1
+				end
+			elseif game.PlaceId == 2029250188 then -- Q-Clash
+				local selfTeam
+				local playerTeam
+				pcall(function()
+					selfTeam = lPlayer.Character.Parent
+					playerTeam = character.Parent
 				end)
 				if selfTeam == playerTeam then
 					return 1
