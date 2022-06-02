@@ -130,7 +130,7 @@ end
 local function getBodyParts(character)
 	local parts = {
 		Head = character:FindFirstChild("Head"),
-		HumanoidRootPart = character:WaitForChild("HumanoidRootPart"),
+		HumanoidRootPart = character:FindFirstChild("HumanoidRootPart"),
 		Humanoid = WaitForChildWhichIsA(character, "Humanoid"),
 		Torso = {},
 		["Left Arm"] = {},
@@ -183,6 +183,9 @@ local function addCharacter(player, character)
 	end
 	-- Sets up original sizes and creates hooks to bypass localscript anticheats
 	local function setup(i, v)
+		for _,connection in pairs(getconnections(v:GetPropertyChangedSignal("Size"))) do
+			connection:Disable()
+		end
 		if not originals[i] then
 			originals[i] = {}
 			originals[i].Size = v.Size
@@ -256,11 +259,11 @@ local function addCharacter(player, character)
 	end
 	local function getChecks()
 		if bodyParts.Humanoid:GetState() == Enum.HumanoidStateType.Dead or bodyParts.Humanoid.Health <= 0 then
-			----print(character.Name, "died")
+			--print(character.Name, "died")
 			return 2
 		end
 		if player.Character ~= character or player.Character == nil then
-			----print(character.Name, "stopped existing")
+			--print(character.Name, "stopped existing")
 			return 2
 		end
 		if game.PlaceId == 6172932937 then -- Energy Assault
@@ -461,7 +464,7 @@ local function addCharacter(player, character)
 	local PlayerRemoving
 	PlayerRemoving = Plrs.PlayerRemoving:Connect(function(v)
 		if v == player then
-			----print(player, "leaving")
+			--print(player, "leaving")
 			reset("all")
 			if nameEsp then
 				nameEsp:Remove()
