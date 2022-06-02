@@ -3,15 +3,13 @@ if not game:IsLoaded() then
 end
 
 if not syn then
-	-- thanks Iris (https://v3rmillion.net/showthread.php?tid=1119132)
-	loadstring(game:HttpGet("https://api.irisapp.ca/Scripts/IrisBetterCompat.lua"))()
+	-- thanks Iris (https://v3rmillion.net/showthread.php?tid=1172094)
+	loadstring(game:HttpGet("https://irisapp.ca/api/Scripts/IrisBetterCompat.lua"))()
 end
 
 -- thanks 3ds and kiko metatables r hard (https://v3rmillion.net/showthread.php?tid=1089069)
 -- my version uses hookmetamethod :D
-if not getgenv().MTAPIMutex then
-	loadstring(game:HttpGet("https://raw.githubusercontent.com/RectangularObject/MT-Api-vhookmetamethod/main/__source/mt-api%20v2.lua", true))()
-end
+if not getgenv().MTAPIMutex then loadstring(game:HttpGet("https://raw.githubusercontent.com/RectangularObject/MT-Api-vhookmetamethod/main/__source/mt-api%20v2.lua", true))() end
 -- thanks lego hacker I love you for making this (https://v3rmillion.net/showthread.php?tid=1140873)
 loadstring(game:HttpGet("https://raw.githubusercontent.com/LegoHacker1337/legohacks/main/PhysicsServiceOnClient.lua"))()
 -- thanks Iris (https://v3rmillion.net/showthread.php?pid=8154179)
