@@ -20,6 +20,7 @@ local Plrs = game:GetService("Players")
 local lPlayer = Plrs.LocalPlayer or Plrs.PlayerAdded:Wait()
 local physService = game:GetService("PhysicsService")
 local RunService = game:GetService("RunService")
+local Teams = game:GetService("Teams")
 physService:CreateCollisionGroup("squarehookhackcheatexploit")
 local function disableCollisions(group)
 	physService:CollisionGroupSetCollidable("squarehookhackcheatexploit", group, false)
@@ -72,84 +73,43 @@ local espHighlightFillTransparency = espGroupbox:AddSlider("espHighlightFillTran
 local espHighlightOutlineTransparency = espGroupbox:AddSlider("espHighlightOutlineTransparency", { Text = "Chams Outline Transparency", Min = 0, Max = 1, Default = 0, Rounding = 2 })
 
 local playerNames = {}
---local npcNames = {} -- I was planning on adding npc support
 local teamNames = {}
 
 local extenderSitCheck = ignoresGroupbox:AddToggle("extenderSitCheck", { Text = "Ignore Sitting Players" })
 local extenderFFCheck = ignoresGroupbox:AddToggle("extenderFFCheck", { Text = "Ignore Forcefielded Players" })
 local ignoreSelectedPlayersToggled = ignoresGroupbox:AddToggle("ignoreSelectedPlayersToggled", { Text = "Ignore Selected Players" })
 local ignorePlayerList = ignoresGroupbox:AddDropdown("ignorePlayerList", { Text = "Players", AllowNull = true, Multi = true, Values = playerNames })
---local ignoreSelectedNpcsToggled = ignoresGroupbox:AddToggle("ignoreSelectedNpcsToggled", {Text = "Ignore Selected Npcs"})
---local ignoreNpcList = ignoresGroupbox:AddDropdown("ignoreNpcList", {Text = "Npcs", AllowNull = true, Multi = true, Values = npcNames})
 local ignoreSelfTeamToggled = ignoresGroupbox:AddToggle("ignoreSelfTeamToggled", { Text = "Ignore Own Team" })
 local ignoreSelectedTeamsToggled = ignoresGroupbox:AddToggle("ignoreSelectedTeamsToggled", { Text = "Ignore Selected Teams" })
 local ignoreTeamList = ignoresGroupbox:AddDropdown("ignoreTeamList", { Text = "Teams", AllowNull = true, Multi = true, Values = teamNames })
 
--- thanks roblox dev forum
-local function CheckTableEquality(t1, t2)
-	for i, v in next, t1 do
-		if t2[i] ~= v then
-			return false
-		end
-	end
-	for i, v in next, t2 do
-		if t1[i] ~= v then
-			return false
-		end
-	end
-	return true
-end
-
--- updates the player list
 task.spawn(function()
 	while true do
-		task.wait() -- if you cry about while true do loops then kys
 		local temp = {}
-		for i, v in ipairs(Plrs:GetPlayers()) do
+		for _,v in ipairs(Plrs:GetPlayers()) do
 			if v ~= lPlayer then
-				temp[i] = v.Name
+				table.insert(temp, v.Name)
 			end
 		end
-		if not CheckTableEquality(playerNames, temp) then
+		if #temp ~= #playerNames then
 			playerNames = temp
-			ignorePlayerList.Values = temp
+			ignorePlayerList.Values = playerNames
 			ignorePlayerList:SetValues()
 			ignorePlayerList:Display()
 		end
-	end
-end)
-
--- updates the team list
-task.spawn(function()
-	local Teams = game:GetService("Teams")
-	while true do
-		task.wait()
-		local temp = {}
-		for i, v in pairs(Teams:GetTeams()) do
-			temp[i] = v.Name
+		temp = {}
+		for _,v in pairs(Teams:GetTeams()) do
+			table.insert(temp, v.Name)
 		end
-		if not CheckTableEquality(teamNames, temp) then
+		if #temp ~= #teamNames then
 			teamNames = temp
 			ignoreTeamList.Values = temp
 			ignoreTeamList:SetValues()
 			ignoreTeamList:Display()
 		end
+		task.wait()
 	end
 end)
-
---task.spawn(function()
---	while true do task.wait()
---		local temp = {}
---		for i,v in ipairs(npcs) do
---			temp[i] = v.Name
---		end
---		if not CheckTableEquality(npcNames, temp) then
---			ignoreNpcList.Values = temp
---			ignoreNpcList:SetValues()
---			ignoreNpcList:Display()
---		end
---	end
---end)
 
 SaveManager:BuildConfigSection(mainTab)
 SaveManager:LoadAutoloadConfig()
@@ -378,8 +338,14 @@ local function addCharacter(character)
 	local nameEsp = Drawing.new("Text")
 	nameEsp.Center = true
 	nameEsp.Outline = true
+	local chams = Instance.new("Highlight")
+	chams.Enabled = false
+	chams.Parent = game:GetService("CoreGui")
+	chams.Adornee = character
+	--ProtectInstance(chams)
 	local RenderStepped
-	RenderStepped = RunService.RenderStepped:Connect(function()
+	RenderStepped = RunService.RenderStepped:Connect(function(deltaTime)
+		timer += deltaTime
 		if espNameToggled.Value then
 			local espPart = character:FindFirstChild("HumanoidRootPart")
 			if not espPart then
@@ -411,14 +377,6 @@ local function addCharacter(character)
 		else
 			nameEsp.Visible = false
 		end
-	end)
-	local chams = Instance.new("Highlight")
-	chams.Enabled = false
-	chams.Parent = character
-	--ProtectInstance(chams)
-	local Heartbeat
-	Heartbeat = RunService.Heartbeat:Connect(function(deltaTime)
-		timer += deltaTime
 		local checks = getChecks()
 		if timer >= (extenderUpdateRate.Value / 1000) then -- divided by 1000 because milliseconds
 			timer = 0
@@ -444,7 +402,6 @@ local function addCharacter(character)
 				nameEsp = nil
 				chams:Destroy()
 				RenderStepped:Disconnect()
-				Heartbeat:Disconnect()
 				return
 			elseif checks == 1 then
 				reset("all")
@@ -506,7 +463,6 @@ local function addCharacter(character)
 			end
 			chams:Destroy()
 			RenderStepped:Disconnect()
-			Heartbeat:Disconnect()
 			PlayerRemoving:Disconnect()
 		end
 	end)
@@ -520,7 +476,7 @@ for _, player in ipairs(Plrs:GetPlayers()) do
 		end
 	else
 		local function onDescendantAdded(descendant)
-			if descendant:IsA("BasePart") then
+			if string.find(descendant.Name, "Torso") then
 				disableCollisions(physService:GetCollisionGroupName(descendant.CollisionGroupId))
 			end
 		end
