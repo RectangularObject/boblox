@@ -72,54 +72,50 @@ local espHighlightDepthMode = espGroupbox:AddDropdown("espHighlightDepthMode", {
 local espHighlightFillTransparency = espGroupbox:AddSlider("espHighlightFillTransparency", { Text = "Chams Fill Transparency", Min = 0, Max = 1, Default = 0.5, Rounding = 2 })
 local espHighlightOutlineTransparency = espGroupbox:AddSlider("espHighlightOutlineTransparency", { Text = "Chams Outline Transparency", Min = 0, Max = 1, Default = 0, Rounding = 2 })
 
-local playerNames = {}
-local teamNames = {}
-
 local extenderSitCheck = ignoresGroupbox:AddToggle("extenderSitCheck", { Text = "Ignore Sitting Players" })
 local extenderFFCheck = ignoresGroupbox:AddToggle("extenderFFCheck", { Text = "Ignore Forcefielded Players" })
 local ignoreSelectedPlayersToggled = ignoresGroupbox:AddToggle("ignoreSelectedPlayersToggled", { Text = "Ignore Selected Players" })
-local ignorePlayerList = ignoresGroupbox:AddDropdown("ignorePlayerList", { Text = "Players", AllowNull = true, Multi = true, Values = playerNames })
+local ignorePlayerList = ignoresGroupbox:AddDropdown("ignorePlayerList", { Text = "Players", AllowNull = true, Multi = true, Values = {} })
 local ignoreSelfTeamToggled = ignoresGroupbox:AddToggle("ignoreSelfTeamToggled", { Text = "Ignore Own Team" })
 local ignoreSelectedTeamsToggled = ignoresGroupbox:AddToggle("ignoreSelectedTeamsToggled", { Text = "Ignore Selected Teams" })
-local ignoreTeamList = ignoresGroupbox:AddDropdown("ignoreTeamList", { Text = "Teams", AllowNull = true, Multi = true, Values = teamNames })
+local ignoreTeamList = ignoresGroupbox:AddDropdown("ignoreTeamList", { Text = "Teams", AllowNull = true, Multi = true, Values = {} })
 
-local function updateList(list, nameList)
-	list.Values = nameList
+local function updateList(list)
 	list:SetValues()
 	list:Display()
 end
 
 Plrs.PlayerAdded:Connect(function(player)
 	--print(player.Name, "joined")
-	table.insert(playerNames, player.Name)
-	updateList(ignorePlayerList, playerNames)
+	table.insert(ignorePlayerList.Values, player.Name)
+	updateList(ignorePlayerList)
 end)
 Plrs.PlayerRemoving:Connect(function(player)
 	--print(player.Name, "left")
-	table.remove(playerNames, table.find(playerNames, player.Name))
-	updateList(ignorePlayerList, playerNames)
+	table.remove(ignorePlayerList.Values, table.find(ignorePlayerList.Values, player.Name))
+	updateList(ignorePlayerList)
 end)
 Teams.ChildAdded:Connect(function(team)
 	--print(team.Name, "created")
-	table.insert(teamNames, team.Name)
-	updateList(ignoreTeamList, teamNames)
+	table.insert(ignoreTeamList.Values, team.Name)
+	updateList(ignoreTeamList)
 end)
 Teams.ChildRemoved:Connect(function(team)
 	--print(team.Name, "deleted")
-	table.remove(teamNames, table.find(teamNames, team.Name))
-	updateList(ignoreTeamList, teamNames)
+	table.remove(ignoreTeamList.Values, table.find(ignoreTeamList.Values, team.Name))
+	updateList(ignoreTeamList)
 end)
 for _,player in ipairs(Plrs:GetPlayers()) do
 	if player == lPlayer then continue end
 	--print("found", player.Name)
-	table.insert(playerNames, player.Name)
+	table.insert(ignorePlayerList.Values, player.Name)
 end
 for _,team in pairs(Teams:GetTeams()) do
 	--print("found", team.Name)
-	table.insert(teamNames, team.Name)
+	table.insert(ignoreTeamList.Values, team.Name)
 end
-updateList(ignorePlayerList, playerNames)
-updateList(ignoreTeamList, teamNames)
+updateList(ignorePlayerList)
+updateList(ignoreTeamList)
 
 SaveManager:BuildConfigSection(mainTab)
 SaveManager:LoadAutoloadConfig()
