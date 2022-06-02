@@ -83,8 +83,8 @@ local ignoreSelfTeamToggled = ignoresGroupbox:AddToggle("ignoreSelfTeamToggled",
 local ignoreSelectedTeamsToggled = ignoresGroupbox:AddToggle("ignoreSelectedTeamsToggled", { Text = "Ignore Selected Teams" })
 local ignoreTeamList = ignoresGroupbox:AddDropdown("ignoreTeamList", { Text = "Teams", AllowNull = true, Multi = true, Values = teamNames })
 
-local function updateList(list)
-	list.Values = playerNames
+local function updateList(list, nameList)
+	list.Values = nameList
 	list:SetValues()
 	list:Display()
 end
@@ -92,22 +92,22 @@ end
 Plrs.PlayerAdded:Connect(function(player)
 	print(player.Name, "joined")
 	table.insert(playerNames, player.Name)
-	updateList(ignorePlayerList)
+	updateList(ignorePlayerList, playerNames)
 end)
 Plrs.PlayerRemoving:Connect(function(player)
 	print(player.Name, "left")
 	table.remove(playerNames, table.find(playerNames, player.Name))
-	updateList(ignorePlayerList)
+	updateList(ignorePlayerList, playerNames)
 end)
 Teams.ChildAdded:Connect(function(team)
 	print(team.Name, "created")
 	table.insert(teamNames, team.Name)
-	updateList(ignoreTeamList)
+	updateList(ignoreTeamList, teamNames)
 end)
 Teams.ChildRemoved:Connect(function(team)
 	print(team.Name, "deleted")
 	table.remove(teamNames, table.find(teamNames, team.Name))
-	updateList(ignoreTeamList)
+	updateList(ignoreTeamList, teamNames)
 end)
 for _,player in ipairs(Plrs:GetPlayers()) do
 	if player == lPlayer then continue end
@@ -118,8 +118,8 @@ for _,team in pairs(Teams:GetTeams()) do
 	print("found", team.Name)
 	table.insert(teamNames, team.Name)
 end
-updateList(ignorePlayerList)
-updateList(ignoreTeamList)
+updateList(ignorePlayerList, playerNames)
+updateList(ignoreTeamList, teamNames)
 
 SaveManager:BuildConfigSection(mainTab)
 SaveManager:LoadAutoloadConfig()
