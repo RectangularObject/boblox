@@ -292,6 +292,11 @@ local function addCharacter(player, character)
 			end
 		end
 		if extenderFFCheck.Value then
+			if game.PlaceId == 4991214437 then -- town
+				if bodyParts.Head.Material == Enum.Material.ForceField then
+					return 1
+				end
+			end
 			local ff = character:FindFirstChildWhichIsA("ForceField", true)
 			if ff and ff.Visible then
 				return 1
@@ -308,12 +313,14 @@ local function addCharacter(player, character)
 				if selfTeam == playerTeam then
 					return 1
 				end
-			elseif game.PlaceId == 2158109152 then -- Weapon Kit
+			end
+			if game.PlaceId == 2158109152 then -- Weapon Kit
 				local friendly = character:FindFirstChild("Friendly", true)
 				if friendly then
 					return 1
 				end
-			elseif game.PlaceId == 633284182 then -- Fireteam
+			end
+			if game.PlaceId == 633284182 then -- Fireteam
 				local selfTeam
 				local playerTeam
 				pcall(function()
@@ -323,7 +330,8 @@ local function addCharacter(player, character)
 				if selfTeam == playerTeam then
 					return 1
 				end
-			elseif game.PlaceId == 2029250188 then -- Q-Clash
+			end
+			if game.PlaceId == 2029250188 then -- Q-Clash
 				local selfTeam
 				local playerTeam
 				pcall(function()
@@ -333,10 +341,9 @@ local function addCharacter(player, character)
 				if selfTeam == playerTeam then
 					return 1
 				end
-			else
-				if lPlayer.Team == player.Team then
-					return 1
-				end
+			end
+			if lPlayer.Team == player.Team then
+				return 1
 			end
 		end
 		if ignoreSelectedTeamsToggled.Value then
