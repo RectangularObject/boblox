@@ -113,18 +113,13 @@ for _,player in ipairs(Plrs:GetPlayers()) do
 	if player == lPlayer then continue end
 	print("found", player.Name)
 	table.insert(playerNames, player.Name)
-	updateList(ignorePlayerList)
 end
 for _,team in pairs(Teams:GetTeams()) do
 	print("found", team.Name)
 	table.insert(teamNames, team.Name)
-	updateList(ignoreTeamList)
 end
-
-
-for _,v in ipairs(Plrs:GetPlayers()) do
-	table.insert(playerNames, v.Name)
-end
+updateList(ignorePlayerList)
+updateList(ignoreTeamList)
 
 SaveManager:BuildConfigSection(mainTab)
 SaveManager:LoadAutoloadConfig()
