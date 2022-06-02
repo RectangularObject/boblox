@@ -110,6 +110,7 @@ Teams.ChildRemoved:Connect(function(team)
 	updateList(ignoreTeamList)
 end)
 for _,player in ipairs(Plrs:GetPlayers()) do
+	if player == lPlayer then continue end
 	print("found", player.Name)
 	table.insert(playerNames, player.Name)
 	updateList(ignorePlayerList)
