@@ -83,33 +83,47 @@ local ignoreSelfTeamToggled = ignoresGroupbox:AddToggle("ignoreSelfTeamToggled",
 local ignoreSelectedTeamsToggled = ignoresGroupbox:AddToggle("ignoreSelectedTeamsToggled", { Text = "Ignore Selected Teams" })
 local ignoreTeamList = ignoresGroupbox:AddDropdown("ignoreTeamList", { Text = "Teams", AllowNull = true, Multi = true, Values = teamNames })
 
-task.spawn(function()
-	while true do
-		local temp = {}
-		for _,v in ipairs(Plrs:GetPlayers()) do
-			if v ~= lPlayer then
-				table.insert(temp, v.Name)
-			end
-		end
-		if #temp ~= #playerNames then
-			playerNames = temp
-			ignorePlayerList.Values = playerNames
-			ignorePlayerList:SetValues()
-			ignorePlayerList:Display()
-		end
-		temp = {}
-		for _,v in pairs(Teams:GetTeams()) do
-			table.insert(temp, v.Name)
-		end
-		if #temp ~= #teamNames then
-			teamNames = temp
-			ignoreTeamList.Values = temp
-			ignoreTeamList:SetValues()
-			ignoreTeamList:Display()
-		end
-		task.wait()
-	end
+local function updateList(list)
+	list.Values = playerNames
+	list:SetValues()
+	list:Display()
+end
+
+Plrs.PlayerAdded:Connect(function(player)
+	print(player.Name, "joined")
+	table.insert(playerNames, player.Name)
+	updateList(ignorePlayerList)
 end)
+Plrs.PlayerRemoving:Connect(function(player)
+	print(player.Name, "left")
+	table.remove(playerNames, table.find(playerNames, player.Name))
+	updateList(ignorePlayerList)
+end)
+Teams.ChildAdded:Connect(function(team)
+	print(team.Name, "created")
+	table.insert(teamNames, team.Name)
+	updateList(ignoreTeamList)
+end)
+Teams.ChildRemoved:Connect(function(team)
+	print(team.Name, "deleted")
+	table.remove(teamNames, table.find(teamNames, team.Name))
+	updateList(ignoreTeamList)
+end)
+for _,player in ipairs(Plrs:GetPlayers()) do
+	print("found", player.Name)
+	table.insert(playerNames, player.Name)
+	updateList(ignorePlayerList)
+end
+for _,team in pairs(Teams:GetTeams()) do
+	print("found", team.Name)
+	table.insert(teamNames, team.Name)
+	updateList(ignoreTeamList)
+end
+
+
+for _,v in ipairs(Plrs:GetPlayers()) do
+	table.insert(playerNames, v.Name)
+end
 
 SaveManager:BuildConfigSection(mainTab)
 SaveManager:LoadAutoloadConfig()
@@ -130,7 +144,7 @@ end
 local function getBodyParts(character)
 	local parts = {
 		Head = character:WaitForChild("Head"),
-		HumanoidRootPart = character:FindFirstChild("HumanoidRootPart"),
+		HumanoidRootPart = character:WaitForChild("HumanoidRootPart", 1),
 		Humanoid = WaitForChildWhichIsA(character, "Humanoid"),
 		Torso = {},
 		["Left Arm"] = {},
