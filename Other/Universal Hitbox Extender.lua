@@ -241,11 +241,11 @@ local function addCharacter(player, character)
 			originals[i].Size = v.Size
 			originals[i].Transparency = v.Transparency
 			originals[i].Massless = v.Massless
-			originals[i].CollisionGroup = physService:GetCollisionGroupName(v.CollisionGroupId)
+			originals[i].CollisionGroupId = v.CollisionGroupId
 			local sizeHook = v:AddGetHook("Size", originals[i].Size)
 			local transparencyHook = v:AddGetHook("Transparency", originals[i].Transparency)
 			local masslessHook = v:AddGetHook("Massless", originals[i].Massless)
-			local collisionHook = v:AddGetHook("CollisionGroupId", physService:GetCollisionGroupId(originals[i].CollisionGroup))
+			local collisionHook = v:AddGetHook("CollisionGroupId", originals[i].CollisionGroupId)
 			v:AddSetHook("Size", function(self, value)
 				originals[i].Size = value
 				sizeHook:Modify("Size", value)
@@ -262,7 +262,7 @@ local function addCharacter(player, character)
 				return value
 			end)
 			v:AddSetHook("CollisionGroupId", function(self, value)
-				originals[i].CollisionGroup = physService:GetCollisionGroupName(value)
+				originals[i].CollisionGroupId = value
 				collisionHook:Modify("CollisionGroupId", value)
 				return value
 			end)
@@ -280,7 +280,7 @@ local function addCharacter(player, character)
 				customPart.Size = originals[customPart.Name].Size
 				customPart.Transparency = originals[customPart.Name].Transparency
 				customPart.Massless = originals[customPart.Name].Massless
-				physService:SetPartCollisionGroup(customPart, originals[customPart.Name].CollisionGroup)
+				customPart.CollisionGroupId = originals[customPart.Name].CollisionGroupId
 			end
 		end
 		for i, v in pairs(bodyParts) do
@@ -292,7 +292,7 @@ local function addCharacter(player, character)
 					v.Size = originals[i].Size
 					v.Transparency = originals[i].Transparency
 					v.Massless = originals[i].Massless
-					physService:SetPartCollisionGroup(v, originals[i].CollisionGroup)
+					v.CollisionGroupId = originals[i].CollisionGroupId
 				elseif type(v) == "table" then
 					for o, b in pairs(v) do
 						if not originals[o] then
@@ -301,7 +301,7 @@ local function addCharacter(player, character)
 						b.Size = originals[o].Size
 						b.Transparency = originals[o].Transparency
 						b.Massless = originals[o].Massless
-						physService:SetPartCollisionGroup(b, originals[o].CollisionGroup)
+						b.CollisionGroupId = originals[o].CollisionGroupId
 					end
 				end
 			end
@@ -454,9 +454,9 @@ local function addCharacter(player, character)
 						end
 						customPart.Massless = true
 						if collisionsToggled.Value then
-							physService:SetPartCollisionGroup(customPart, originals[customPart.Name].CollisionGroup)
+							customPart.CollisionGroupId = originals[customPart.Name].CollisionGroupId
 						else
-							physService:SetPartCollisionGroup(customPart, "squarehookhackcheatexploit")
+							customPart.CollisionGroupId = physService:GetCollisionGroupId("squarehookhackcheatexploit")
 						end
 						customPart.Size = Vector3.new(extenderSize.Value, extenderSize.Value, extenderSize.Value)
 						customPart.Transparency = extenderTransparency.Value
@@ -474,9 +474,9 @@ local function addCharacter(player, character)
 								v.Massless = true
 							end
 							if collisionsToggled.Value then
-								physService:SetPartCollisionGroup(v, originals[i].CollisionGroup)
+								v.CollisionGroupId = originals[i].CollisionGroupId
 							else
-								physService:SetPartCollisionGroup(v, "squarehookhackcheatexploit")
+								v.CollisionGroupId = physService:GetCollisionGroupId("squarehookhackcheatexploit")
 							end
 							v.Size = Vector3.new(extenderSize.Value, extenderSize.Value, extenderSize.Value)
 							v.Transparency = extenderTransparency.Value
@@ -487,9 +487,9 @@ local function addCharacter(player, character)
 								end
 								b.Massless = true
 								if collisionsToggled.Value then
-									physService:SetPartCollisionGroup(b, originals[o].CollisionGroup)
+									b.CollisionGroupId = originals[o].CollisionGroupId
 								else
-									physService:SetPartCollisionGroup(b, "squarehookhackcheatexploit")
+									b.CollisionGroupId = physService:GetCollisionGroupId("squarehookhackcheatexploit")
 								end
 								b.Size = Vector3.new(extenderSize.Value, extenderSize.Value, extenderSize.Value)
 								b.Transparency = extenderTransparency.Value
