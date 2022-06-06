@@ -329,15 +329,14 @@ local function addCharacter(player, character)
 			end
 		end
 		if game.PlaceId == 633284182 then -- Fireteam
-			local success, result = pcall(function()
+			local down
+			pcall(function()
 				if character.Torso.NeckBallSocket.Enabled then
-					return true
+					down = true
 				end
 			end)
-			if success then
-				if result then
-					return 1
-				end
+			if down then
+				return 1
 			end
 		end
 		-- other checks
