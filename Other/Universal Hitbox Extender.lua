@@ -215,6 +215,12 @@ local function getTeam(player, character)
 		if selfTeam == playerTeam then
 			return true
 		end
+	elseif game.PlaceId == 2978450615 then -- Paintball Reloaded (hi kringly :troll:)
+		local selfTeam = getrenv()._G.PlayerProfiles.Data[lPlayer.Name].Team
+		local playerTeam = getrenv()._G.PlayerProfiles.Data[player.Name].Team
+		if selfTeam == playerTeam then
+			return true
+		end
 	elseif lPlayer.Team == player.Team then
 		return true
 	else
