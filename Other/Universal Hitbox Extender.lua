@@ -16,6 +16,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/LegoHacker1337/legoha
 --loadstring(game:HttpGet("https://api.irisapp.ca/Scripts/IrisInstanceProtect.lua"))()
 local Plrs = game:GetService("Players")
 local lPlayer = Plrs.LocalPlayer or Plrs.PlayerAdded:Wait()
+local Workspace = game:GetService("Workspace")
 local physService = game:GetService("PhysicsService")
 local RunService = game:GetService("RunService")
 local Teams = game:GetService("Teams")
@@ -221,6 +222,28 @@ local function getTeam(player, character)
 		if selfTeam == playerTeam then
 			return true
 		end
+	elseif game.GameId == 1934496708 then -- Project: SCP
+		if player.Team == "LOBBY" or lPlayer.Team == player.Team then return true end
+		if lPlayer.PlayerGui.MainUI.Frame.EndScreen.AnchorPoint.X < 1 then return false end
+		local selfTeam
+		local playerTeam
+		if string.match(lPlayer.Team.Name, "MTF") or lPlayer.Team.Name == "Security Chief" or lPlayer.Team.Name == "Facility Guard" or lPlayer.Team.Name == "Researcher" or lPlayer.Team.Name == "Janitor" then
+			selfTeam = "MTF"
+		elseif string.match(lPlayer.Team.Name, "CI") or lPlayer.Team.Name == "Class-D" then
+			selfTeam = "CD/CI"
+		elseif string.match(lPlayer.Team.Name, "SCP") then
+			selfTeam = "SCP"
+		end
+		if string.match(player.Team.Name, "MTF") or player.Team.Name == "Security Chief" or player.Team.Name == "Facility Guard" or player.Team.Name == "Researcher" or player.Team.Name == "Janitor" then
+			playerTeam = "MTF"
+		elseif string.match(player.Team.Name, "CI") or player.Team.Name == "Class-D" then
+			playerTeam = "CD/CI"
+		elseif string.match(player.Team.Name, "SCP") then
+			playerTeam = "SCP"
+		end
+		if selfTeam == playerTeam then
+			return true
+		end
 	elseif lPlayer.Team == player.Team then
 		return true
 	else
@@ -394,7 +417,7 @@ local function addCharacter(player, character)
 				espPart = bodyParts.Torso[1]
 			end
 			if espPart then
-				local pos, onScreen = workspace.CurrentCamera:WorldToViewportPoint(espPart.Position)
+				local pos, onScreen = Workspace.CurrentCamera:WorldToViewportPoint(espPart.Position)
 				if onScreen and getChecks() == 0 then
 					if espNameType.Value == "Display Name" then
 						nameEsp.Text = player.DisplayName
